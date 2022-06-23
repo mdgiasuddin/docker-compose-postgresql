@@ -36,6 +36,7 @@ public class PdfFileGenerationService {
         BaseFont winding = BaseFont.createFont(AppConstants.WINDING, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
 
         Font font = new Font(Font.FontFamily.TIMES_ROMAN, 10f, Font.ITALIC, BaseColor.BLACK);
+        Font smallFont = new Font(Font.FontFamily.TIMES_ROMAN, 7f, Font.NORMAL, new BaseColor(128, 0, 0));
 
         Font oldEnglish22 = new Font(oldEnglish, 22, Font.NORMAL, BaseColor.BLACK);
         Font oldEnglishIT18 = new Font(oldEnglish, 18, Font.ITALIC, BaseColor.BLACK);
@@ -128,7 +129,7 @@ public class PdfFileGenerationService {
             signImage.setAlignment(Element.ALIGN_LEFT);
 
             PdfPTable table2 = new PdfPTable(3);
-            table2.setWidths(new int[]{17, 2, 3});
+            table2.setWidths(new int[]{24, 2, 3});
             table2.setWidthPercentage(100);
 
             cell = new PdfPCell(new Phrase("", scriptMTBold11));
@@ -152,7 +153,10 @@ public class PdfFileGenerationService {
             cell.setBorder(Rectangle.NO_BORDER);
             table3.addCell(cell);
 
-            cell = new PdfPCell(new Phrase("Controller of Exam", scriptMTBold11));
+            Paragraph controllerExam = new Paragraph(new Chunk("Gias Uddin Ahmed\n", smallFont));
+            controllerExam.add(new Chunk("Controller of Exam", scriptMTBold11));
+            cell = new PdfPCell(controllerExam);
+            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             cell.setBorder(Rectangle.NO_BORDER);
             table3.addCell(cell);
 
