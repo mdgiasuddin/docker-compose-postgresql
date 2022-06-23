@@ -6,6 +6,7 @@ import com.example.springpostgresqlcompose.db.repositories.StudentRepository;
 import com.example.springpostgresqlcompose.dtos.StudentDTO;
 import com.example.springpostgresqlcompose.utils.ClassOptionUtils;
 import com.example.springpostgresqlcompose.utils.ExcelFormattingUtils;
+import com.example.springpostgresqlcompose.utils.StringFormattingUtils;
 import com.itextpdf.text.Image;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +20,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 import java.io.InputStream;
 import java.util.*;
@@ -31,22 +31,20 @@ import java.util.*;
 public class StudentService {
     private final StudentRepository studentRepository;
     private final ExcelFormattingUtils excelFormattingUtils;
+    private final StringFormattingUtils stringFormattingUtils;
     private final ClassOptionUtils classOptionUtils;
     private final PdfFileGenerationService pdfFileGenerationService;
     private final WatermarkPdfGeneration watermarkPdfGeneration;
 
-    public Object saveStudent(MultipartFile multipartFile) {
+    public String saveStudent(MultipartFile multipartFile) {
         if (multipartFile.isEmpty()) {
             return "Wrong Excel Format!";
         }
-
 
         try {
             InputStream inputStream = multipartFile.getInputStream();
             XSSFRow row;
 
-            String originalFileName = multipartFile.getOriginalFilename();
-            System.out.println("File Name : " + originalFileName);
             XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
             XSSFSheet spreadsheet = workbook.getSheetAt(0);
             Iterator<Row> rowIterator = spreadsheet.iterator();
@@ -56,11 +54,12 @@ public class StudentService {
             if (rowIterator.hasNext()) {
                 row = (XSSFRow) rowIterator.next();
                 colNumber = row.getPhysicalNumberOfCells();
-                if (colNumber != 4) {
+                if (colNumber != 5) {
                     return "Wrong Excel Format!";
                 }
 
-                List<StudentDTO> studentDTOList = new ArrayList<>();
+                List<StudentDTO> maleStudentDTOList = new ArrayList<>();
+                List<StudentDTO> femaleStudentDTOList = new ArrayList<>();
 
                 while (rowIterator.hasNext()) {
                     row = (XSSFRow) rowIterator.next();
@@ -69,19 +68,24 @@ public class StudentService {
                     String schoolName = excelFormattingUtils.getStringFromAllCellType(row.getCell(1));
                     String classId = excelFormattingUtils.getStringFromAllCellType(row.getCell(2));
                     Long schoolRollNo = excelFormattingUtils.getIntegerFromAllCellType(row.getCell(3)).longValue();
+                    String gender = excelFormattingUtils.getStringFromAllCellType(row.getCell(4)).toUpperCase();
 
                     StudentDTO studentDTO = new StudentDTO();
-                    studentDTO.setName(studentName);
-                    studentDTO.setSchoolName(schoolName);
+                    studentDTO.setName(stringFormattingUtils.formatString(studentName));
+                    studentDTO.setSchoolName(stringFormattingUtils.formatString(schoolName));
                     studentDTO.setClassId(classId);
                     studentDTO.setSchoolRollNo(schoolRollNo);
 
-                    studentDTOList.add(studentDTO);
+                    if (gender.equals("MALE"))
+                        maleStudentDTOList.add(studentDTO);
+                    else
+                        femaleStudentDTOList.add(studentDTO);
                 }
 
-                List<StudentDTO> sortedStudent = sortStudent(studentDTOList);
+                List<StudentDTO> sortedStudent = sortStudent(maleStudentDTOList);
+                sortedStudent.addAll(sortStudent(femaleStudentDTOList));
 
-                saveStudentToDatabase(studentDTOList);
+                saveStudentToDatabase(sortedStudent);
 
                 return "Right Excel Format!";
 
@@ -103,8 +107,7 @@ public class StudentService {
             int count = 0;
             while (true) {
                 int randIndex = random.nextInt(listLength);
-                System.out.println("Random number : " + randIndex);
-                if (resultList.size() == 0 || !resultList.get(resultList.size() - 1).getSchoolName().equals(studentDTOList.get(randIndex).getSchoolName())) {
+                if (resultList.isEmpty() || !resultList.get(resultList.size() - 1).getSchoolName().equals(studentDTOList.get(randIndex).getSchoolName())) {
                     resultList.add(studentDTOList.get(randIndex));
 
                     StudentDTO tempStudent = studentDTOList.get(randIndex);
@@ -139,7 +142,7 @@ public class StudentService {
     }
 
     public void saveStudentToDatabase(List<StudentDTO> studentDTOList) {
-        if (studentDTOList.size() == 0)
+        if (studentDTOList.isEmpty())
             return;
 
         StudentDTO firstStudent = studentDTOList.get(0);
@@ -185,7 +188,7 @@ public class StudentService {
     }
 
 
-//    @PostConstruct
+    //    @PostConstruct
     public void createStudent() {
         List<Student> studentList = Arrays.asList(
                 new Student("Gias Uddin", "Betbaria Secondary School", 1L, "Ten", 123456L, 234567L, 56.0),
@@ -207,5 +210,22 @@ public class StudentService {
 
     public long countStudentBySearch(Map map) {
         return studentRepository.countByName(map.get("name"));
+    }
+
+    public List<Student> getAllStudent() {
+        return studentRepository.findAllByOrderById();
+    }
+
+    public Map<String, Object> testStudent() {
+        List<String> schoolNames = studentRepository.getDistinctSchoolName();
+
+        Set<String> set = new HashSet<>(schoolNames);
+        List<String> list = Arrays.asList("HB Secondary School", "Betbaria Secondary School", "Giash Uddin");
+        set.addAll(list);
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("SchoolNames", set);
+
+        return map;
     }
 }
