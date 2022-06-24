@@ -25,9 +25,19 @@ public class StudentController {
         return studentService.saveStudent(multipartFile);
     }
 
+    @PutMapping("/verification-no")
+    public String addVerificationNo() {
+        return studentService.addVerificationNo();
+    }
+
     @GetMapping("/admit-card/{classId}")
-    public void generateAdmitCard(@PathVariable("classId") String classId) throws Exception {
-        studentService.generateAdmitCard(classId);
+    public String generateAdmitCard(@PathVariable("classId") String classId) throws Exception {
+        return studentService.generateAdmitCard(classId);
+    }
+
+    @GetMapping("/list/excel/{classId}")
+    public String generateExcelOfStudentList(@PathVariable("classId") String classId) throws Exception {
+        return studentService.generateExcelOfStudentList(classId);
     }
 
     @GetMapping("/all")

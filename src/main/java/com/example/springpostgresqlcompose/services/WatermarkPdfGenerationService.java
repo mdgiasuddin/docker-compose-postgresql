@@ -16,7 +16,7 @@ import java.io.*;
 @Slf4j
 @Transactional
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class WatermarkPdfGeneration {
+public class WatermarkPdfGenerationService {
 
     public void addWaterMarkToPdf(String src, String dest, Image image, float width, float height, float opacity) throws IOException, DocumentException {
         PdfReader reader = new PdfReader(src);

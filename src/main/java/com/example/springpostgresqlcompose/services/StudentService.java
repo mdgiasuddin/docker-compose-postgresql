@@ -3,9 +3,9 @@ package com.example.springpostgresqlcompose.services;
 import com.example.springpostgresqlcompose.constants.AppConstants;
 import com.example.springpostgresqlcompose.db.model.Student;
 import com.example.springpostgresqlcompose.db.repositories.StudentRepository;
+import com.example.springpostgresqlcompose.dtos.ExcelData;
 import com.example.springpostgresqlcompose.dtos.StudentDTO;
 import com.example.springpostgresqlcompose.utils.ClassOptionUtils;
-import com.example.springpostgresqlcompose.utils.ExcelFormattingUtils;
 import com.example.springpostgresqlcompose.utils.StringFormattingUtils;
 import com.itextpdf.text.Image;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
@@ -30,11 +31,11 @@ import java.util.*;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class StudentService {
     private final StudentRepository studentRepository;
-    private final ExcelFormattingUtils excelFormattingUtils;
+    private final ExcelGenerationService excelGenerationService;
     private final StringFormattingUtils stringFormattingUtils;
     private final ClassOptionUtils classOptionUtils;
-    private final PdfFileGenerationService pdfFileGenerationService;
-    private final WatermarkPdfGeneration watermarkPdfGeneration;
+    private final PdfGenerationService pdfGenerationService;
+    private final WatermarkPdfGenerationService watermarkPdfGenerationService;
 
     public String saveStudent(MultipartFile multipartFile) {
         if (multipartFile.isEmpty()) {
@@ -64,11 +65,11 @@ public class StudentService {
                 while (rowIterator.hasNext()) {
                     row = (XSSFRow) rowIterator.next();
 
-                    String studentName = excelFormattingUtils.getStringFromAllCellType(row.getCell(0));
-                    String schoolName = excelFormattingUtils.getStringFromAllCellType(row.getCell(1));
-                    String classId = excelFormattingUtils.getStringFromAllCellType(row.getCell(2));
-                    Long schoolRollNo = excelFormattingUtils.getIntegerFromAllCellType(row.getCell(3)).longValue();
-                    String gender = excelFormattingUtils.getStringFromAllCellType(row.getCell(4)).toUpperCase();
+                    String studentName = excelGenerationService.getStringFromAllCellType(row.getCell(0));
+                    String schoolName = excelGenerationService.getStringFromAllCellType(row.getCell(1));
+                    String classId = excelGenerationService.getStringFromAllCellType(row.getCell(2));
+                    Long schoolRollNo = excelGenerationService.getIntegerFromAllCellType(row.getCell(3)).longValue();
+                    String gender = excelGenerationService.getStringFromAllCellType(row.getCell(4)).toUpperCase();
 
                     StudentDTO studentDTO = new StudentDTO();
                     studentDTO.setName(stringFormattingUtils.formatString(studentName));
@@ -173,35 +174,61 @@ public class StudentService {
         }
     }
 
-    public void generateAdmitCard(String classId) throws Exception {
+    public String generateAdmitCard(String classId) throws Exception {
         List<Student> studentList = studentRepository.findByClassIdOrderByRollNo(classId);
         Map<String, String> map = classOptionUtils.getOptionsOfClass(classId);
 
         String admitCardFileName = AppConstants.INPUT_OUTPUT_FILE_DIRECTORY + map.get("admitCards");
         String watermarkAdmitCard = AppConstants.INPUT_OUTPUT_FILE_DIRECTORY + map.get("watermarkAdmitCards");
-        pdfFileGenerationService.generateAdmitCard(studentList, admitCardFileName);
+        pdfGenerationService.generateAdmitCard(studentList, admitCardFileName);
 
         Thread.sleep(2000);
 
         Image logoImage = Image.getInstance(AppConstants.AMAR_AMI_LOGO);
-        watermarkPdfGeneration.addWaterMarkToPdf(admitCardFileName, watermarkAdmitCard, logoImage, 300, 300, 0.1f);
+        watermarkPdfGenerationService.addWaterMarkToPdf(admitCardFileName, watermarkAdmitCard, logoImage, 300, 300, 0.1f);
+
+        return "Admit card generated successfully!";
     }
 
+    public String addVerificationNo() {
+        List<Integer> list = new ArrayList<>();
 
-    //    @PostConstruct
-    public void createStudent() {
-        List<Student> studentList = Arrays.asList(
-                new Student("Gias Uddin", "Betbaria Secondary School", 1L, "Ten", 123456L, 234567L, 56.0),
-                new Student("Sobuj Ahmed", "Pirtola Secondary School", 1L, "Eight", 123457L, 234568L, 60.0),
-                new Student("Biplob Hossain", "Nouda Para Secondary School", 1L, "Ten", 123458L, 234569L, 62.0),
-                new Student("Rony Islam", "HB Secondary School", 1L, "Ten", 123459L, 234570L, 58.0),
-                new Student("Parvez Ahmed", "Betbaria Secondary School", 1L, "Ten", 123460L, 234571L, 59.0),
-                new Student("Rubel Ahmed", "Pirtola Secondary School", 1L, "Five", 123461L, 234572L, 70.0),
-                new Student("Riaz Ahmed", "Nouda Para Secondary School", 1L, "Ten", 123462L, 234573L, 81.0),
-                new Student("Rabby Ahmed", "HB Secondary School", 1L, "Eight", 123463L, 234574L, 76.0)
-        );
+        for (int i = 101; i <= 999; i++) {
+            list.add(i);
+        }
+        Collections.shuffle(list);
+        List<Student> studentList = studentRepository.findAll();
+
+        Random random = new Random();
+        int i = 0;
+        for (Student student : studentList) {
+            char ch = (char) ('A' + random.nextInt(26));
+            student.setVerificationNo(ch + "" + list.get(i++));
+        }
 
         studentRepository.saveAll(studentList);
+
+        return "Verification No added successfully!";
+    }
+
+    public String generateExcelOfStudentList(String classId) throws IOException {
+        List<Student> studentList = studentRepository.findByClassIdOrderByRollNo(classId);
+
+        String[] headers = new String[]{
+                "Id", "Name", "School Name", "Roll No.", "Reg No."
+        };
+
+        List<Object[]> otherRowList = new ArrayList<>();
+        for (Student student : studentList) {
+            Object[] otherRow = new Object[]{
+                    student.getId(), student.getName(), student.getSchoolName(), student.getRollNo(), student.getRegNo()
+            };
+            otherRowList.add(otherRow);
+        }
+
+        excelGenerationService.createExcelFile(new ExcelData("Test", headers, otherRowList), "Class_" + classId + "_Student_List.xlsx");
+
+        return "Excel Generated Successfully!";
     }
 
     public Page<Student> filterStudentBySearch(Map map, Pageable pageable) {

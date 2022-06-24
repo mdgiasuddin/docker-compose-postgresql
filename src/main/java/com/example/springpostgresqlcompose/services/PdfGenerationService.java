@@ -20,9 +20,10 @@ import java.util.List;
 @Slf4j
 @Transactional
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class PdfFileGenerationService {
+public class PdfGenerationService {
     private final int SPACING = 20;
     private final int NARROW_SPACING = 5;
+
     public void generateAdmitCard(List<Student> studentList, String filename) throws IOException, DocumentException {
 
         Rectangle pageSize = new Rectangle(594, 423);
