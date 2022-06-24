@@ -36,11 +36,12 @@ public class PdfFileGenerationService {
         BaseFont winding = BaseFont.createFont(AppConstants.WINDING, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
 
         Font font = new Font(Font.FontFamily.TIMES_ROMAN, 10f, Font.ITALIC, BaseColor.BLACK);
-        Font smallFont = new Font(Font.FontFamily.TIMES_ROMAN, 7f, Font.NORMAL, new BaseColor(128, 0, 0));
+        Font controllerSmallFont = new Font(Font.FontFamily.TIMES_ROMAN, 8f, Font.NORMAL, new BaseColor(128, 0, 0));
 
         Font oldEnglish22 = new Font(oldEnglish, 22, Font.NORMAL, BaseColor.BLACK);
         Font oldEnglishIT18 = new Font(oldEnglish, 18, Font.ITALIC, BaseColor.BLACK);
         Font scriptMTBold11 = new Font(scriptMTBold, 11, Font.NORMAL, BaseColor.BLACK);
+        Font controllerFont = new Font(scriptMTBold, 11f, Font.NORMAL, new BaseColor(128, 0, 0));
         Font windingFont = new Font(winding, 11f, Font.NORMAL);
 
         PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(filename));
@@ -153,8 +154,8 @@ public class PdfFileGenerationService {
             cell.setBorder(Rectangle.NO_BORDER);
             table3.addCell(cell);
 
-            Paragraph controllerExam = new Paragraph(new Chunk("Gias Uddin Ahmed\n", smallFont));
-            controllerExam.add(new Chunk("Controller of Exam", scriptMTBold11));
+            Paragraph controllerExam = new Paragraph(new Chunk("Gias Uddin Ahmed\n", controllerSmallFont));
+            controllerExam.add(new Chunk("Controller of Exam", controllerFont));
             cell = new PdfPCell(controllerExam);
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             cell.setBorder(Rectangle.NO_BORDER);
@@ -179,13 +180,19 @@ public class PdfFileGenerationService {
 
             directions.addCell(markCell);
 
-            cell = new PdfPCell(new Phrase("Examinee must appear in the exam hall & take his/her seat 20 minute before the exam start.", font));
+            cell = new PdfPCell(new Phrase("Examinee must appear in the exam hall & take his/her seat at least 20 minutes before the exam start.", font));
             cell.setBorder(Rectangle.NO_BORDER);
             directions.addCell(cell);
 
             directions.addCell(markCell);
 
             cell = new PdfPCell(new Phrase("Examinee must carry his/her own writing materials like pen, pencil, geometry instruments & calculator. But he/she cannot keep anything with him/her except these materials.", font));
+            cell.setBorder(Rectangle.NO_BORDER);
+            directions.addCell(cell);
+
+            directions.addCell(markCell);
+
+            cell = new PdfPCell(new Phrase("In case of violating one or more rules by any examinee during the exam time, that examinee's exam will be canceled and legal actions against that examinee will be taken.", font));
             cell.setBorder(Rectangle.NO_BORDER);
             directions.addCell(cell);
 
