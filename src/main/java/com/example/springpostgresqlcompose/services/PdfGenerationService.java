@@ -29,7 +29,7 @@ public class PdfGenerationService {
         Rectangle pageSize = new Rectangle(594, 423);
         pageSize.setBackgroundColor(new BaseColor(192, 192, 192));
         final float marginTopBottom = 25;
-        final float marginLeftRight = 50;
+        final float marginLeftRight = 35;
         Document document = new Document(pageSize, marginLeftRight, marginLeftRight, marginTopBottom, marginTopBottom);
 
         BaseFont scriptMTBold = BaseFont.createFont(AppConstants.SCRIPT_MT_BOLD, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
@@ -52,6 +52,8 @@ public class PdfGenerationService {
         Image logoImage = Image.getInstance(AppConstants.AMAR_AMI_LOGO);
         Image signImage = Image.getInstance(AppConstants.SIGNATURE_IMAGE);
 
+        String centreMale = "Betbaria Secondary School";
+        String centreFemale = "Mojibur Rahman Memorial Pre-Cadet School, Betbaria";
         for (Student student : studentList) {
 
             logoImage.setAlignment(Element.ALIGN_LEFT);
@@ -84,13 +86,13 @@ public class PdfGenerationService {
 
             // Rectangle around 'Admit card'.
             PdfContentByte cb = writer.getDirectContent();
-            cb.roundRectangle(250f,290f,95f,20f, 5f);
+            cb.roundRectangle(250f, 285f, 95f, 20f, 5f);
             cb.setColorStroke(new BaseColor(209, 0, 0));
             cb.stroke();
 
             PdfPTable table = new PdfPTable(2);
-            table.setWidthPercentage(90);
-            table.setWidths(new int[]{6, 3});
+            table.setWidthPercentage(95);
+            table.setWidths(new int[]{8, 5});
 
             PdfPCell cell;
 
@@ -118,11 +120,11 @@ public class PdfGenerationService {
             cell.setBorder(Rectangle.NO_BORDER);
             table.addCell(cell);
 
-            cell = new PdfPCell(new Phrase("Centre: Betbaria Secondary School", scriptMTBold11));
+            cell = new PdfPCell(new Phrase("Centre: " + centreFemale, scriptMTBold11));
             cell.setBorder(Rectangle.NO_BORDER);
             table.addCell(cell);
 
-            cell = new PdfPCell(new Phrase("Exam Date: 09 July, 9.00 am", scriptMTBold11));
+            cell = new PdfPCell(new Phrase("Exam Date: Thursday, 07 July, 9.00 am", scriptMTBold11));
             cell.setBorder(Rectangle.NO_BORDER);
             table.addCell(cell);
 
