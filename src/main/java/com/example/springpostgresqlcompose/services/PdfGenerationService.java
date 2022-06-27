@@ -3,6 +3,8 @@ package com.example.springpostgresqlcompose.services;
 
 import com.example.springpostgresqlcompose.constants.AppConstants;
 import com.example.springpostgresqlcompose.db.model.Student;
+import com.example.springpostgresqlcompose.db.repositories.StudentRepository;
+import com.example.springpostgresqlcompose.dtos.AttendanceSheetData;
 import com.example.springpostgresqlcompose.enums.Gender;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.*;
@@ -15,6 +17,8 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 
 @Service
@@ -22,8 +26,10 @@ import java.util.List;
 @Transactional
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class PdfGenerationService {
+
+    private final StudentRepository studentRepository;
+
     private final int SPACING = 20;
-    private final int NARROW_SPACING = 5;
 
     public void generateAdmitCard(List<Student> studentList, String filename) throws IOException, DocumentException {
 
@@ -211,6 +217,66 @@ public class PdfGenerationService {
             document.add(table3);
             document.add(line);
             document.add(directions);
+
+            document.newPage();
+        }
+
+        document.close();
+    }
+
+    public void generateAttendanceSheet(List<AttendanceSheetData> dataList) throws IOException, DocumentException {
+
+        String filename = AppConstants.INPUT_OUTPUT_FILE_DIRECTORY + "Attendance_Sheet.pdf";
+        final float margin = 25;
+        Document document = new Document(PageSize.A4, margin, margin, margin, margin);
+
+        Font boldFont = new Font(Font.FontFamily.TIMES_ROMAN, 12f, Font.BOLD, BaseColor.BLACK);
+        Font font = new Font(Font.FontFamily.TIMES_ROMAN, 12f, Font.NORMAL, BaseColor.BLACK);
+
+        PdfWriter.getInstance(document, Files.newOutputStream(Paths.get(filename)));
+
+        document.open();
+
+        for (AttendanceSheetData data : dataList) {
+
+            Paragraph headingParagraph = new Paragraph("Talent Evaluation Exam - 2022\n", font);
+            headingParagraph.add(new Chunk("Room No: " + data.getRoomNo() + "\n", font));
+            headingParagraph.add(new Chunk(data.getCentre() + "\n", font));
+            headingParagraph.add(new Chunk("Class: " + data.getClassId() + " (Roll: " + data.getStartRollNo() + " - " + data.getEndRollNo() + ")\n", font));
+            headingParagraph.setAlignment(Element.ALIGN_CENTER);
+            headingParagraph.setSpacingAfter(20);
+
+            List<Student> studentList = studentRepository.findByRollNoIsBetweenOrderByRollNoAsc(data.getStartRollNo(), data.getEndRollNo());
+
+            PdfPTable table = new PdfPTable(6);
+            table.setWidthPercentage(100);
+            table.setWidths(new int[]{2, 15, 5, 5, 5, 10});
+
+            table.addCell(new Phrase("Sl.", boldFont));
+            table.addCell(new Phrase("Name", boldFont));
+            table.addCell(new Phrase("Roll No.", boldFont));
+            table.addCell(new Phrase("Reg No.", boldFont));
+            table.addCell(new Phrase("Verify No.", boldFont));
+            table.addCell(new Phrase("Signature of Examinee", boldFont));
+
+            int i = 1;
+            for (Student student : studentList) {
+                table.addCell(new Phrase(i++ + ".", font));
+                table.addCell(new Phrase(student.getName(), font));
+                table.addCell(new Phrase(String.valueOf(student.getRollNo()), font));
+                table.addCell(new Phrase(String.valueOf(student.getRegNo()), font));
+                table.addCell(new Phrase(student.getVerificationNo(), font));
+                table.addCell(new Phrase("", font));
+            }
+
+            table.setSpacingAfter(60);
+
+            Paragraph signParagraph = new Paragraph("Name & Signature of Invigilator", boldFont);
+            signParagraph.setAlignment(Element.ALIGN_RIGHT);
+
+            document.add(headingParagraph);
+            document.add(table);
+            document.add(signParagraph);
 
             document.newPage();
         }

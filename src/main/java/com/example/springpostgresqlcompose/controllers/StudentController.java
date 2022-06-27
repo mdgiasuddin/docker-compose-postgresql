@@ -35,6 +35,11 @@ public class StudentController {
         return studentService.generateAdmitCard(classId);
     }
 
+    @PostMapping("/attendance-sheet")
+    public String generateAttendance(@RequestParam("file") final MultipartFile multipartFile) {
+        return studentService.generateAttendance(multipartFile);
+    }
+
     @GetMapping("/list/excel/{classId}")
     public String generateExcelOfStudentList(@PathVariable("classId") String classId) throws Exception {
         return studentService.generateExcelOfStudentList(classId);

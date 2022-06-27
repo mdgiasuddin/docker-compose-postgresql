@@ -3,6 +3,7 @@ package com.example.springpostgresqlcompose.services;
 import com.example.springpostgresqlcompose.constants.AppConstants;
 import com.example.springpostgresqlcompose.db.model.Student;
 import com.example.springpostgresqlcompose.db.repositories.StudentRepository;
+import com.example.springpostgresqlcompose.dtos.AttendanceSheetData;
 import com.example.springpostgresqlcompose.dtos.ExcelData;
 import com.example.springpostgresqlcompose.dtos.StudentDTO;
 import com.example.springpostgresqlcompose.enums.Gender;
@@ -193,6 +194,54 @@ public class StudentService {
         watermarkPdfGenerationService.addWaterMarkToPdf(admitCardFileName, watermarkAdmitCard, logoImage, 300, 300, 0.1f);
 
         return "Admit card generated successfully!";
+    }
+
+    public String generateAttendance(MultipartFile multipartFile) {
+        if (multipartFile.isEmpty()) {
+            return "Wrong Excel Format!";
+        }
+
+        try {
+            InputStream inputStream = multipartFile.getInputStream();
+            XSSFRow row;
+
+            XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
+            XSSFSheet spreadsheet = workbook.getSheetAt(0);
+            Iterator<Row> rowIterator = spreadsheet.iterator();
+
+            int colNumber;
+
+            if (rowIterator.hasNext()) {
+                row = (XSSFRow) rowIterator.next();
+                colNumber = row.getPhysicalNumberOfCells();
+                if (colNumber != 5) {
+                    return "Wrong Excel Format!";
+                }
+
+                List<AttendanceSheetData> dataList = new ArrayList<>();
+                while (rowIterator.hasNext()) {
+                    row = (XSSFRow) rowIterator.next();
+
+                    String classId = excelGenerationService.getStringFromAllCellType(row.getCell(0));
+                    String roomNo = excelGenerationService.getStringFromAllCellType(row.getCell(1));
+                    String centre = excelGenerationService.getStringFromAllCellType(row.getCell(2));
+                    long startRoll = excelGenerationService.getIntegerFromAllCellType(row.getCell(3)).longValue();
+                    long endRoll = excelGenerationService.getIntegerFromAllCellType(row.getCell(4)).longValue();
+
+                    dataList.add(new AttendanceSheetData(classId, roomNo, centre, startRoll, endRoll));
+
+                }
+
+                pdfGenerationService.generateAttendanceSheet(dataList);
+                return "Right Excel Format!";
+
+            }
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "Wrong Excel Format!";
     }
 
     public String addVerificationNo() {
