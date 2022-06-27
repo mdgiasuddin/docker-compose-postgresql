@@ -224,6 +224,51 @@ public class PdfGenerationService {
         document.close();
     }
 
+    public void generateSeatPlan(List<Student> studentList, String filename) throws IOException, DocumentException {
+
+        final float margin = 5;
+        Document document = new Document(PageSize.A4, margin, margin, margin, margin);
+
+        Font font = new Font(Font.FontFamily.TIMES_ROMAN, 21f, Font.NORMAL, BaseColor.BLACK);
+        Font nameFont = new Font(Font.FontFamily.TIMES_ROMAN, 14f, Font.NORMAL, BaseColor.BLACK);
+
+        PdfWriter.getInstance(document, Files.newOutputStream(Paths.get(filename)));
+
+        document.open();
+
+        PdfPTable table = new PdfPTable(3);
+        table.setWidthPercentage(100);
+        table.setWidths(new int[]{1, 1, 1});
+
+        for (Student student : studentList) {
+            Paragraph paragraph = new Paragraph("Class: " + student.getClassId() + "\n", font);
+            paragraph.add(new Chunk("Roll: " + student.getRollNo() + "\n", font));
+            paragraph.add(new Chunk("Name: " + student.getName() + "\n", nameFont));
+
+            PdfPCell cell = new PdfPCell(paragraph);
+            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            cell.setPaddingBottom(15);
+            cell.setPaddingTop(5);
+
+            table.addCell(cell);
+        }
+
+        for (int i = 0; i < 3 - studentList.size() % 3; i++) {
+            PdfPCell cell = new PdfPCell();
+            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            cell.setPaddingBottom(15);
+            cell.setPaddingTop(5);
+
+            table.addCell(cell);
+        }
+
+
+        document.add(table);
+
+        document.newPage();
+        document.close();
+    }
+
     public void generateAttendanceSheet(List<AttendanceSheetData> dataList) throws IOException, DocumentException {
 
         String filename = AppConstants.INPUT_OUTPUT_FILE_DIRECTORY + "Attendance_Sheet.pdf";

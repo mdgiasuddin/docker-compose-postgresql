@@ -12,6 +12,8 @@ import java.util.List;
 public interface StudentRepository extends JpaRepository<Student, Integer> {
     List<Student> findByClassIdOrderByRollNo(String classId);
 
+    List<Student> findByClassIdAndNameIsNotNullOrderByRollNo(String classId);
+
     List<Student> findByClassIdOrderBySchoolNameAscRollNoAsc(String classId);
 
     List<Student> findByRollNoIsBetweenOrderByRollNoAsc(long startRoll, long endRoll);

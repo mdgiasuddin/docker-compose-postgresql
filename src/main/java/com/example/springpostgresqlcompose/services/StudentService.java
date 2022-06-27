@@ -196,6 +196,15 @@ public class StudentService {
         return "Admit card generated successfully!";
     }
 
+    public String generateSeatPlan(String classId) throws Exception {
+        List<Student> studentList = studentRepository.findByClassIdAndNameIsNotNullOrderByRollNo(classId);
+
+        String fileName = AppConstants.INPUT_OUTPUT_FILE_DIRECTORY + classId + "_Seat_Plan.pdf";
+        pdfGenerationService.generateSeatPlan(studentList, fileName);
+
+        return "Seat plan generated successfully!";
+    }
+
     public String generateAttendance(MultipartFile multipartFile) {
         if (multipartFile.isEmpty()) {
             return "Wrong Excel Format!";
