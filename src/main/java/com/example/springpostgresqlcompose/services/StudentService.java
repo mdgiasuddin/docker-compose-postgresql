@@ -5,6 +5,7 @@ import com.example.springpostgresqlcompose.db.model.Student;
 import com.example.springpostgresqlcompose.db.repositories.StudentRepository;
 import com.example.springpostgresqlcompose.dtos.ExcelData;
 import com.example.springpostgresqlcompose.dtos.StudentDTO;
+import com.example.springpostgresqlcompose.enums.Gender;
 import com.example.springpostgresqlcompose.utils.ClassOptionUtils;
 import com.example.springpostgresqlcompose.utils.StringFormattingUtils;
 import com.itextpdf.text.Image;
@@ -77,10 +78,13 @@ public class StudentService {
                     studentDTO.setClassId(classId);
                     studentDTO.setSchoolRollNo(schoolRollNo);
 
-                    if (gender.equals("MALE"))
+                    if (gender.equals("MALE")) {
+                        studentDTO.setGender(Gender.M);
                         maleStudentDTOList.add(studentDTO);
-                    else
+                    } else {
+                        studentDTO.setGender(Gender.F);
                         femaleStudentDTOList.add(studentDTO);
+                    }
                 }
 
                 List<StudentDTO> sortedStudent = sortStudent(maleStudentDTOList);
@@ -167,6 +171,7 @@ public class StudentService {
             Long regNo = (startingRegNo * 10000) + ((1 + random.nextInt(9)) * 1000) + increasingRegNo + i;
             student.setRollNo(rollNo);
             student.setRegNo(regNo);
+            student.setGender(studentDTO.getGender());
             i++;
 
             studentRepository.save(student);
@@ -175,7 +180,7 @@ public class StudentService {
     }
 
     public String generateAdmitCard(String classId) throws Exception {
-        List<Student> studentList = studentRepository.findByClassIdOrderByRollNo(classId);
+        List<Student> studentList = studentRepository.findByClassIdOrderBySchoolNameAscRollNoAsc(classId);
         Map<String, String> map = classOptionUtils.getOptionsOfClass(classId);
 
         String admitCardFileName = AppConstants.INPUT_OUTPUT_FILE_DIRECTORY + map.get("admitCards");

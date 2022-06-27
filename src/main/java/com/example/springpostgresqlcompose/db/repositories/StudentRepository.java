@@ -12,6 +12,8 @@ import java.util.List;
 public interface StudentRepository extends JpaRepository<Student, Integer> {
     List<Student> findByClassIdOrderByRollNo(String classId);
 
+    List<Student> findByClassIdOrderBySchoolNameAscRollNoAsc(String classId);
+
     @Query("select s from Student s where ( :name is null or s.name = :name ) and " +
             "( :schoolName is null or s.schoolName = :schoolName) and " +
             "( :schoolRollNo is null or s.schoolRollNo = :schoolRollNo )")

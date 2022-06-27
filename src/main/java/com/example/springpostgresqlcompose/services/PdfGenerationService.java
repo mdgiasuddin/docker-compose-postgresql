@@ -3,6 +3,7 @@ package com.example.springpostgresqlcompose.services;
 
 import com.example.springpostgresqlcompose.constants.AppConstants;
 import com.example.springpostgresqlcompose.db.model.Student;
+import com.example.springpostgresqlcompose.enums.Gender;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.*;
 import com.itextpdf.text.pdf.draw.LineSeparator;
@@ -52,8 +53,6 @@ public class PdfGenerationService {
         Image logoImage = Image.getInstance(AppConstants.AMAR_AMI_LOGO);
         Image signImage = Image.getInstance(AppConstants.SIGNATURE_IMAGE);
 
-        String centreMale = "Betbaria Secondary School";
-        String centreFemale = "Mojibur Rahman Memorial Pre-Cadet School, Betbaria";
         for (Student student : studentList) {
 
             logoImage.setAlignment(Element.ALIGN_LEFT);
@@ -120,7 +119,13 @@ public class PdfGenerationService {
             cell.setBorder(Rectangle.NO_BORDER);
             table.addCell(cell);
 
-            cell = new PdfPCell(new Phrase("Centre: " + centreFemale, scriptMTBold11));
+            String centre;
+            if (student.getGender().equals(Gender.M))
+                centre = "Betbaria Secondary School";
+            else
+                centre = "Mozibor Rahman Smriti Pre-Cadet School, Betbaria";
+
+            cell = new PdfPCell(new Phrase("Centre: " + centre, scriptMTBold11));
             cell.setBorder(Rectangle.NO_BORDER);
             table.addCell(cell);
 
