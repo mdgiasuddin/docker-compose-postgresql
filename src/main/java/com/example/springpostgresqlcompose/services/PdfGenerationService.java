@@ -5,6 +5,7 @@ import com.example.springpostgresqlcompose.constants.AppConstants;
 import com.example.springpostgresqlcompose.db.model.Student;
 import com.example.springpostgresqlcompose.db.repositories.StudentRepository;
 import com.example.springpostgresqlcompose.dtos.AttendanceSheetData;
+import com.example.springpostgresqlcompose.dtos.UnregisteredStudents;
 import com.example.springpostgresqlcompose.enums.Gender;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.*;
@@ -328,6 +329,68 @@ public class PdfGenerationService {
         }
 
         document.close();
+    }
+
+    public void generateUnregisteredStudentList(UnregisteredStudents unregisteredStudents) throws IOException, DocumentException {
+
+        String filename = AppConstants.INPUT_OUTPUT_FILE_DIRECTORY + "Unregistered_List.pdf";
+        final float margin = 25;
+        Document document = new Document(PageSize.A4, margin, margin, margin, margin);
+
+        Font boldFont = new Font(Font.FontFamily.TIMES_ROMAN, 12f, Font.BOLD, BaseColor.BLACK);
+        Font font = new Font(Font.FontFamily.TIMES_ROMAN, 12f, Font.NORMAL, BaseColor.BLACK);
+
+        PdfWriter.getInstance(document, Files.newOutputStream(Paths.get(filename)));
+
+        document.open();
+
+        document.add(getUnregisteredHeadingParagraph("Ten", font));
+        document.add(generateUnregisteredTable(unregisteredStudents.getTenStudents(), boldFont, font));
+        document.newPage();
+
+        document.add(getUnregisteredHeadingParagraph("Eight", font));
+        document.add(generateUnregisteredTable(unregisteredStudents.getEightStudents(), boldFont, font));
+        document.newPage();
+
+        document.add(getUnregisteredHeadingParagraph("Five", font));
+        document.add(generateUnregisteredTable(unregisteredStudents.getFiveStudents(), boldFont, font));
+
+
+        document.close();
+    }
+
+    private Paragraph getUnregisteredHeadingParagraph(String classId, Font font) {
+        Paragraph headingParagraph = new Paragraph("Talent Evaluation Exam - 2022\n", font);
+        headingParagraph.add(new Chunk("Class: " + classId, font));
+        headingParagraph.setAlignment(Element.ALIGN_CENTER);
+        headingParagraph.setSpacingAfter(20);
+
+        return headingParagraph;
+    }
+
+    private PdfPTable generateUnregisteredTable(List<Student> studentList, Font boldFont, Font font) throws DocumentException {
+        PdfPTable table = new PdfPTable(6);
+        table.setWidthPercentage(100);
+        table.setWidths(new int[]{2, 15, 15, 5, 5, 5});
+
+        table.addCell(new Phrase("Sl.", boldFont));
+        table.addCell(new Phrase("Name", boldFont));
+        table.addCell(new Phrase("School Name", boldFont));
+        table.addCell(new Phrase("Roll No.", boldFont));
+        table.addCell(new Phrase("Reg No.", boldFont));
+        table.addCell(new Phrase("Verify No.", boldFont));
+
+        int i = 1;
+        for (Student student : studentList) {
+            table.addCell(new Phrase(i++ + ".", font));
+            table.addCell(new Phrase("", font));
+            table.addCell(new Phrase("", font));
+            table.addCell(new Phrase(String.valueOf(student.getRollNo()), font));
+            table.addCell(new Phrase(String.valueOf(student.getRegNo()), font));
+            table.addCell(new Phrase(student.getVerificationNo(), font));
+        }
+
+        return table;
     }
 
 

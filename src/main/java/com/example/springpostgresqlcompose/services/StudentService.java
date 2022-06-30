@@ -6,9 +6,11 @@ import com.example.springpostgresqlcompose.db.repositories.StudentRepository;
 import com.example.springpostgresqlcompose.dtos.AttendanceSheetData;
 import com.example.springpostgresqlcompose.dtos.ExcelData;
 import com.example.springpostgresqlcompose.dtos.StudentDTO;
+import com.example.springpostgresqlcompose.dtos.UnregisteredStudents;
 import com.example.springpostgresqlcompose.enums.Gender;
 import com.example.springpostgresqlcompose.utils.ClassOptionUtils;
 import com.example.springpostgresqlcompose.utils.StringFormattingUtils;
+import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Image;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -183,7 +185,7 @@ public class StudentService {
 
         }
 
-        for (int j = 0; j < 25; j++) {
+        for (int j = 0; j < 30; j++) {
             Student student = new Student();
             Long rollNo = startingRollNo + i;
             Long regNo = (startingRegNo * 10000) + ((1 + random.nextInt(9)) * 1000) + increasingRegNo + i;
@@ -266,6 +268,17 @@ public class StudentService {
             e.printStackTrace();
         }
         return "Ops! Could not generate attendance sheet!";
+    }
+
+    public String generateUnregisteredStudentList() throws DocumentException, IOException {
+
+        List<Student> tenStudents = studentRepository.findByClassIdAndNameIsNullOrderByRollNo("Ten");
+        List<Student> eightStudents = studentRepository.findByClassIdAndNameIsNullOrderByRollNo("Eight");
+        List<Student> fiveStudents = studentRepository.findByClassIdAndNameIsNullOrderByRollNo("Five");
+
+        pdfGenerationService.generateUnregisteredStudentList(new UnregisteredStudents(tenStudents, eightStudents, fiveStudents));
+
+        return "Unregistered student list generated successfully!";
     }
 
     public String addVerificationNo() {

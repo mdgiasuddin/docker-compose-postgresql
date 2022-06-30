@@ -50,6 +50,11 @@ public class StudentController {
         return studentService.generateExcelOfStudentList(classId);
     }
 
+    @GetMapping("/list/pdf/unregistered")
+    public String generateUnregisteredStudentList() throws Exception {
+        return studentService.generateUnregisteredStudentList();
+    }
+
     @PutMapping("/excel/mark-input")
     public String updateMark(@RequestParam("file") final MultipartFile multipartFile) {
         return studentService.updateMark(multipartFile);
