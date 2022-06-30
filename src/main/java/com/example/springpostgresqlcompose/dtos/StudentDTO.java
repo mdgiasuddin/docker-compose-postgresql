@@ -14,6 +14,7 @@ public class StudentDTO {
     private String name;
     private String schoolName;
     private String classId;
+    private String classIdActual;
     private Long schoolRollNo;
     private Long rollNo;
     private Long regNo;

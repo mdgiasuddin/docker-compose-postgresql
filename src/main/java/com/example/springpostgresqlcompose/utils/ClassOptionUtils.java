@@ -31,7 +31,7 @@ public class ClassOptionUtils {
         } else if (classId.equalsIgnoreCase("Five")) {
             startingRollNo = 831341;
             startingRegNo = 23;
-            increasingRegNo = 541;
+            increasingRegNo = 421;
         }
 
         map.put("admitCards", admitCards);

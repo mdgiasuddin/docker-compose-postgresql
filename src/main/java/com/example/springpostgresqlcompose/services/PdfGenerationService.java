@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -52,7 +51,7 @@ public class PdfGenerationService {
         Font controllerFont = new Font(scriptMTBold, 11f, Font.NORMAL, new BaseColor(128, 0, 0));
         Font windingFont = new Font(winding, 11f, Font.NORMAL);
 
-        PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(filename));
+        PdfWriter writer = PdfWriter.getInstance(document, Files.newOutputStream(Paths.get(filename)));
 
         document.open();
 
@@ -70,7 +69,7 @@ public class PdfGenerationService {
 
             PdfPCell imageCell = new PdfPCell();
             imageCell.addElement(logoImage);
-            imageCell.setBorder(PdfPCell.NO_BORDER);
+            imageCell.setBorder(Rectangle.NO_BORDER);
             imageTable.addCell(imageCell);
 
             Font font2 = new Font(oldEnglish, 12, Font.NORMAL, BaseColor.BLACK);
@@ -117,7 +116,9 @@ public class PdfGenerationService {
             cell.setBorder(Rectangle.NO_BORDER);
             table.addCell(cell);
 
-            cell = new PdfPCell(new Phrase("Class: " + student.getClassId(), scriptMTBold11));
+            String classId = student.getClassId() + (student.getClassId().equals(student.getClassIdActual()) ? ""
+                    : " (" + student.getClassIdActual() + ")");
+            cell = new PdfPCell(new Phrase("Class: " + classId, scriptMTBold11));
             cell.setBorder(Rectangle.NO_BORDER);
             table.addCell(cell);
 

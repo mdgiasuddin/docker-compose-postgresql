@@ -41,7 +41,7 @@ public class StudentService {
 
     public String saveStudent(MultipartFile multipartFile) {
         if (multipartFile.isEmpty()) {
-            return "Wrong Excel Format!";
+            return "File is empty!";
         }
 
         try {
@@ -57,8 +57,8 @@ public class StudentService {
             if (rowIterator.hasNext()) {
                 row = (XSSFRow) rowIterator.next();
                 colNumber = row.getPhysicalNumberOfCells();
-                if (colNumber != 5) {
-                    return "Wrong Excel Format!";
+                if (colNumber != 6) {
+                    return "Excel must have 6 column!";
                 }
 
                 List<StudentDTO> maleStudentDTOList = new ArrayList<>();
@@ -70,13 +70,15 @@ public class StudentService {
                     String studentName = excelGenerationService.getStringFromAllCellType(row.getCell(0));
                     String schoolName = excelGenerationService.getStringFromAllCellType(row.getCell(1));
                     String classId = excelGenerationService.getStringFromAllCellType(row.getCell(2));
-                    Long schoolRollNo = excelGenerationService.getIntegerFromAllCellType(row.getCell(3)).longValue();
-                    String gender = excelGenerationService.getStringFromAllCellType(row.getCell(4)).toUpperCase();
+                    String classIdActual = excelGenerationService.getStringFromAllCellType(row.getCell(3));
+                    Long schoolRollNo = excelGenerationService.getIntegerFromAllCellType(row.getCell(4)).longValue();
+                    String gender = excelGenerationService.getStringFromAllCellType(row.getCell(5)).toUpperCase();
 
                     StudentDTO studentDTO = new StudentDTO();
                     studentDTO.setName(stringFormattingUtils.formatString(studentName));
                     studentDTO.setSchoolName(stringFormattingUtils.formatString(schoolName));
                     studentDTO.setClassId(classId);
+                    studentDTO.setClassIdActual(classIdActual);
                     studentDTO.setSchoolRollNo(schoolRollNo);
 
                     if (gender.equals("MALE")) {
@@ -93,7 +95,7 @@ public class StudentService {
 
                 saveStudentToDatabase(sortedStudent);
 
-                return "Right Excel Format!";
+                return "Successfully saved to database!";
 
             }
 
@@ -101,7 +103,7 @@ public class StudentService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return "Wrong Excel Format!";
+        return "Ops! could not save to database!";
     }
 
     public List<StudentDTO> sortStudent(List<StudentDTO> studentDTOList) {
@@ -161,12 +163,14 @@ public class StudentService {
 
         Random random = new Random();
 
+        List<Student> studentList = new ArrayList<>();
         int i = 0;
         for (StudentDTO studentDTO : studentDTOList) {
             Student student = new Student();
             student.setName(studentDTO.getName());
             student.setSchoolName(studentDTO.getSchoolName());
             student.setClassId(studentDTO.getClassId());
+            student.setClassIdActual(studentDTO.getClassIdActual());
             student.setSchoolRollNo(studentDTO.getSchoolRollNo());
             Long rollNo = startingRollNo + i;
             Long regNo = (startingRegNo * 10000) + ((1 + random.nextInt(9)) * 1000) + increasingRegNo + i;
@@ -175,13 +179,27 @@ public class StudentService {
             student.setGender(studentDTO.getGender());
             i++;
 
-            studentRepository.save(student);
+            studentList.add(student);
 
         }
+
+        for (int j = 0; j < 25; j++) {
+            Student student = new Student();
+            Long rollNo = startingRollNo + i;
+            Long regNo = (startingRegNo * 10000) + ((1 + random.nextInt(9)) * 1000) + increasingRegNo + i;
+            student.setClassId(firstStudent.getClassId());
+            student.setRollNo(rollNo);
+            student.setRegNo(regNo);
+            i++;
+
+            studentList.add(student);
+        }
+
+        studentRepository.saveAll(studentList);
     }
 
     public String generateAdmitCard(String classId) throws Exception {
-        List<Student> studentList = studentRepository.findByClassIdOrderBySchoolNameAscRollNoAsc(classId);
+        List<Student> studentList = studentRepository.findByClassIdAndNameIsNotNullOrderBySchoolNameAscRollNoAsc(classId);
         Map<String, String> map = classOptionUtils.getOptionsOfClass(classId);
 
         String admitCardFileName = AppConstants.INPUT_OUTPUT_FILE_DIRECTORY + map.get("admitCards");
@@ -207,7 +225,7 @@ public class StudentService {
 
     public String generateAttendance(MultipartFile multipartFile) {
         if (multipartFile.isEmpty()) {
-            return "Wrong Excel Format!";
+            return "The File is empty!";
         }
 
         try {
@@ -218,13 +236,10 @@ public class StudentService {
             XSSFSheet spreadsheet = workbook.getSheetAt(0);
             Iterator<Row> rowIterator = spreadsheet.iterator();
 
-            int colNumber;
-
             if (rowIterator.hasNext()) {
                 row = (XSSFRow) rowIterator.next();
-                colNumber = row.getPhysicalNumberOfCells();
-                if (colNumber != 5) {
-                    return "Wrong Excel Format!";
+                if (row.getPhysicalNumberOfCells() != 5) {
+                    return "Excel must have 5 columns!";
                 }
 
                 List<AttendanceSheetData> dataList = new ArrayList<>();
@@ -242,7 +257,7 @@ public class StudentService {
                 }
 
                 pdfGenerationService.generateAttendanceSheet(dataList);
-                return "Right Excel Format!";
+                return "Successfully generated attendance sheet!";
 
             }
 
@@ -250,7 +265,7 @@ public class StudentService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return "Wrong Excel Format!";
+        return "Ops! Could not generate attendance sheet!";
     }
 
     public String addVerificationNo() {
@@ -275,16 +290,16 @@ public class StudentService {
     }
 
     public String generateExcelOfStudentList(String classId) throws IOException {
-        List<Student> studentList = studentRepository.findByClassIdOrderByRollNo(classId);
+        List<Student> studentList = studentRepository.findByClassIdAndNameIsNotNullOrderByRollNo(classId);
 
         String[] headers = new String[]{
-                "Id", "Name", "School Name", "Roll No.", "Reg No."
+                "Id", "Name", "School Name", "Roll No.", "Reg No.", "Verify No"
         };
 
         List<Object[]> otherRowList = new ArrayList<>();
         for (Student student : studentList) {
             Object[] otherRow = new Object[]{
-                    student.getId(), student.getName(), student.getSchoolName(), student.getRollNo(), student.getRegNo()
+                    student.getId(), student.getName(), student.getSchoolName(), student.getRollNo(), student.getRegNo(), student.getVerificationNo()
             };
             otherRowList.add(otherRow);
         }
@@ -292,6 +307,52 @@ public class StudentService {
         excelGenerationService.createExcelFile(new ExcelData("Test", headers, otherRowList), "Class_" + classId + "_Student_List.xlsx");
 
         return "Excel Generated Successfully!";
+    }
+
+    public String updateMark(MultipartFile multipartFile) {
+        if (multipartFile.isEmpty()) {
+            return "File is empty!";
+        }
+
+        List<Student> studentList = studentRepository.findAll();
+        Map<Long, Student> studentMap = new HashMap<>();
+        for (Student student : studentList) {
+            studentMap.put(student.getRollNo(), student);
+        }
+
+        try {
+            InputStream inputStream = multipartFile.getInputStream();
+            XSSFRow row;
+
+            XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
+            XSSFSheet spreadsheet = workbook.getSheetAt(0);
+            Iterator<Row> rowIterator = spreadsheet.iterator();
+
+            if (rowIterator.hasNext()) {
+                row = (XSSFRow) rowIterator.next();
+                if (row.getPhysicalNumberOfCells() != 4) {
+                    return "Excel must have 4 column!";
+                }
+
+                while (rowIterator.hasNext()) {
+                    row = (XSSFRow) rowIterator.next();
+
+                    long rollNo = excelGenerationService.getIntegerFromAllCellType(row.getCell(0)).longValue();
+                    double mark = excelGenerationService.getDoubleFromAllCellType(row.getCell(1));
+
+                    studentMap.get(rollNo).setMarks(mark);
+                }
+
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Ops! could not save to database!";
+        }
+
+        studentRepository.saveAll(studentList);
+
+        return "Successfully saved to database!";
     }
 
     public Page<Student> filterStudentBySearch(Map map, Pageable pageable) {

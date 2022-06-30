@@ -48,6 +48,17 @@ public class ExcelGenerationService {
         return -1;
     }
 
+    public Double getDoubleFromAllCellType(Cell cell) {
+        if (cell == null)
+            return -1d;
+        if (cell.getCellType().equals(CellType.NUMERIC))
+            return cell.getNumericCellValue();
+        if (cell.getCellType().equals(CellType.STRING))
+            return Double.parseDouble(cell.getStringCellValue());
+
+        return -1d;
+    }
+
     public void createExcelFile(ExcelData excelData, String fileName) throws IOException {
 
         XSSFWorkbook workbook = new XSSFWorkbook();
