@@ -6,7 +6,6 @@ import com.example.springpostgresqlcompose.db.model.Student;
 import com.example.springpostgresqlcompose.db.repositories.StudentRepository;
 import com.example.springpostgresqlcompose.dtos.AttendanceSheetData;
 import com.example.springpostgresqlcompose.dtos.UnregisteredStudents;
-import com.example.springpostgresqlcompose.enums.Gender;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.*;
 import com.itextpdf.text.pdf.draw.LineSeparator;
@@ -127,11 +126,7 @@ public class PdfGenerationService {
             cell.setBorder(Rectangle.NO_BORDER);
             table.addCell(cell);
 
-            String centre;
-            if (student.getGender().equals(Gender.M))
-                centre = "Betbaria Secondary School";
-            else
-                centre = "Mozibor Rahman Smriti Pre-Cadet School, Betbaria";
+            String centre = "Betbaria Secondary School";
 
             cell = new PdfPCell(new Phrase("Centre: " + centre, scriptMTBold11));
             cell.setBorder(Rectangle.NO_BORDER);
@@ -344,15 +339,15 @@ public class PdfGenerationService {
 
         document.open();
 
-        document.add(getUnregisteredHeadingParagraph("Ten", font));
+        document.add(getUnregisteredHeadingParagraph("10 (Ten)", font));
         document.add(generateUnregisteredTable(unregisteredStudents.getTenStudents(), boldFont, font));
         document.newPage();
 
-        document.add(getUnregisteredHeadingParagraph("Eight", font));
+        document.add(getUnregisteredHeadingParagraph("08 (Eight)", font));
         document.add(generateUnregisteredTable(unregisteredStudents.getEightStudents(), boldFont, font));
         document.newPage();
 
-        document.add(getUnregisteredHeadingParagraph("Five", font));
+        document.add(getUnregisteredHeadingParagraph("05 (Five)", font));
         document.add(generateUnregisteredTable(unregisteredStudents.getFiveStudents(), boldFont, font));
 
 

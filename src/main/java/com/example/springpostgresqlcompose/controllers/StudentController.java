@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -21,7 +22,7 @@ public class StudentController {
     private final StudentService studentService;
 
     @PostMapping("/excel")
-    public String saveStudent(@RequestParam("file") final MultipartFile multipartFile) {
+    public String saveStudent(@RequestParam("file") final MultipartFile multipartFile) throws IOException {
         return studentService.saveStudent(multipartFile);
     }
 

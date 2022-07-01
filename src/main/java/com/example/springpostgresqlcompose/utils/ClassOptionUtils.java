@@ -21,16 +21,16 @@ public class ClassOptionUtils {
         int increasingRegNo = 0;
 
         if (classId.equalsIgnoreCase("Ten")) {
-            startingRollNo = 971221;
-            startingRegNo = 57;
+            startingRollNo = 973101;
+            startingRegNo = 56;
             increasingRegNo = 331;
         } else if (classId.equalsIgnoreCase("Eight")) {
-            startingRollNo = 651411;
-            startingRegNo = 37;
+            startingRollNo = 645101;
+            startingRegNo = 38;
             increasingRegNo = 271;
         } else if (classId.equalsIgnoreCase("Five")) {
-            startingRollNo = 831341;
-            startingRegNo = 23;
+            startingRollNo = 827101;
+            startingRegNo = 29;
             increasingRegNo = 421;
         }
 

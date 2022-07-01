@@ -41,70 +41,68 @@ public class StudentService {
     private final PdfGenerationService pdfGenerationService;
     private final WatermarkPdfGenerationService watermarkPdfGenerationService;
 
-    public String saveStudent(MultipartFile multipartFile) {
+    @org.springframework.transaction.annotation.Transactional
+    public String saveStudent(MultipartFile multipartFile) throws IOException {
         if (multipartFile.isEmpty()) {
             return "File is empty!";
         }
 
-        try {
-            InputStream inputStream = multipartFile.getInputStream();
-            XSSFRow row;
 
-            XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
-            XSSFSheet spreadsheet = workbook.getSheetAt(0);
-            Iterator<Row> rowIterator = spreadsheet.iterator();
+        InputStream inputStream = multipartFile.getInputStream();
+        XSSFRow row;
 
-            int colNumber;
+        XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
+        XSSFSheet spreadsheet = workbook.getSheetAt(0);
+        Iterator<Row> rowIterator = spreadsheet.iterator();
 
-            if (rowIterator.hasNext()) {
-                row = (XSSFRow) rowIterator.next();
-                colNumber = row.getPhysicalNumberOfCells();
-                if (colNumber != 6) {
-                    return "Excel must have 6 column!";
-                }
+        int colNumber;
 
-                List<StudentDTO> maleStudentDTOList = new ArrayList<>();
-                List<StudentDTO> femaleStudentDTOList = new ArrayList<>();
-
-                while (rowIterator.hasNext()) {
-                    row = (XSSFRow) rowIterator.next();
-
-                    String studentName = excelGenerationService.getStringFromAllCellType(row.getCell(0));
-                    String schoolName = excelGenerationService.getStringFromAllCellType(row.getCell(1));
-                    String classId = excelGenerationService.getStringFromAllCellType(row.getCell(2));
-                    String classIdActual = excelGenerationService.getStringFromAllCellType(row.getCell(3));
-                    Long schoolRollNo = excelGenerationService.getIntegerFromAllCellType(row.getCell(4)).longValue();
-                    String gender = excelGenerationService.getStringFromAllCellType(row.getCell(5)).toUpperCase();
-
-                    StudentDTO studentDTO = new StudentDTO();
-                    studentDTO.setName(stringFormattingUtils.formatString(studentName));
-                    studentDTO.setSchoolName(stringFormattingUtils.formatString(schoolName));
-                    studentDTO.setClassId(classId);
-                    studentDTO.setClassIdActual(classIdActual);
-                    studentDTO.setSchoolRollNo(schoolRollNo);
-
-                    if (gender.equals("MALE")) {
-                        studentDTO.setGender(Gender.M);
-                        maleStudentDTOList.add(studentDTO);
-                    } else {
-                        studentDTO.setGender(Gender.F);
-                        femaleStudentDTOList.add(studentDTO);
-                    }
-                }
-
-                List<StudentDTO> sortedStudent = sortStudent(maleStudentDTOList);
-                sortedStudent.addAll(sortStudent(femaleStudentDTOList));
-
-                saveStudentToDatabase(sortedStudent);
-
-                return "Successfully saved to database!";
-
+        if (rowIterator.hasNext()) {
+            row = (XSSFRow) rowIterator.next();
+            colNumber = row.getPhysicalNumberOfCells();
+            if (colNumber != 6) {
+                return "Excel must have 6 column!";
             }
 
+            List<StudentDTO> maleStudentDTOList = new ArrayList<>();
+            List<StudentDTO> femaleStudentDTOList = new ArrayList<>();
 
-        } catch (Exception e) {
-            e.printStackTrace();
+            while (rowIterator.hasNext()) {
+                row = (XSSFRow) rowIterator.next();
+
+                String studentName = excelGenerationService.getStringFromAllCellType(row.getCell(0));
+                String schoolName = excelGenerationService.getStringFromAllCellType(row.getCell(1));
+                String classId = excelGenerationService.getStringFromAllCellType(row.getCell(2));
+                String classIdActual = excelGenerationService.getStringFromAllCellType(row.getCell(3));
+                Long schoolRollNo = excelGenerationService.getIntegerFromAllCellType(row.getCell(4)).longValue();
+                String gender = excelGenerationService.getStringFromAllCellType(row.getCell(5)).toUpperCase();
+
+                StudentDTO studentDTO = new StudentDTO();
+                studentDTO.setName(stringFormattingUtils.formatString(studentName));
+                studentDTO.setSchoolName(stringFormattingUtils.formatString(schoolName));
+                studentDTO.setClassId(classId);
+                studentDTO.setClassIdActual(classIdActual);
+                studentDTO.setSchoolRollNo(schoolRollNo);
+
+                if (gender.equals("MALE")) {
+                    studentDTO.setGender(Gender.M);
+                    maleStudentDTOList.add(studentDTO);
+                } else {
+                    studentDTO.setGender(Gender.F);
+                    femaleStudentDTOList.add(studentDTO);
+                }
+            }
+
+            List<StudentDTO> sortedStudent = sortStudent(femaleStudentDTOList);
+            sortedStudent.addAll(sortStudent(maleStudentDTOList));
+
+            saveStudentToDatabase(sortedStudent);
+
+            return "Successfully saved to database!";
+
         }
+
+
         return "Ops! could not save to database!";
     }
 
