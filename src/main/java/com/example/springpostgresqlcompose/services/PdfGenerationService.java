@@ -32,7 +32,7 @@ public class PdfGenerationService {
 
     public void generateAdmitCard(List<Student> studentList, String filename) throws IOException, DocumentException {
 
-        Rectangle pageSize = new Rectangle(594, 423);
+        Rectangle pageSize = new Rectangle(594, 426);
         pageSize.setBackgroundColor(new BaseColor(192, 192, 192));
         final float marginTopBottom = 25;
         final float marginLeftRight = 35;
@@ -90,7 +90,7 @@ public class PdfGenerationService {
 
             // Rectangle around 'Admit card'.
             PdfContentByte cb = writer.getDirectContent();
-            cb.roundRectangle(250f, 285f, 95f, 20f, 5f);
+            cb.roundRectangle(250f, 288f, 95f, 20f, 5f);
             cb.setColorStroke(new BaseColor(209, 0, 0));
             cb.stroke();
 
