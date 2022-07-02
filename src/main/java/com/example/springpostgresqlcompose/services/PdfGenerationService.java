@@ -8,7 +8,6 @@ import com.example.springpostgresqlcompose.dtos.AttendanceSheetData;
 import com.example.springpostgresqlcompose.dtos.UnregisteredStudents;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.*;
-import com.itextpdf.text.pdf.draw.LineSeparator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -160,6 +159,7 @@ public class PdfGenerationService {
             PdfPTable table3 = new PdfPTable(2);
             table3.setWidths(new int[]{8, 3});
             table3.setWidthPercentage(100);
+            table3.setSpacingAfter(15);
 
             cell = new PdfPCell(new Phrase("", scriptMTBold11));
             cell.setBorder(Rectangle.NO_BORDER);
@@ -172,8 +172,10 @@ public class PdfGenerationService {
             cell.setBorder(Rectangle.NO_BORDER);
             table3.addCell(cell);
 
-
-            Paragraph line = new Paragraph(new Chunk(new LineSeparator(0.0F, 100.0F, BaseColor.BLACK, Element.ALIGN_LEFT, 1)));
+            // Line before directions.
+            cb.rectangle(35f, 128f, 524f, 0.3f);
+            cb.setColorStroke(new BaseColor(0, 0, 0));
+            cb.stroke();
 
             PdfPTable directions = new PdfPTable(2);
             directions.setWidthPercentage(100);
@@ -212,7 +214,6 @@ public class PdfGenerationService {
             document.add(table);
             document.add(table2);
             document.add(table3);
-            document.add(line);
             document.add(directions);
 
             document.newPage();
