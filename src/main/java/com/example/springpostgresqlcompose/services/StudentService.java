@@ -390,4 +390,53 @@ public class StudentService {
 
         return map;
     }
+
+    public String updateMarkForTest() {
+        List<Student> studentList = studentRepository.findAllByNameIsNotNull();
+
+        Random random = new Random();
+
+        for (Student student : studentList) {
+            double marks = 40 + random.nextInt(95);
+
+            student.setMarks(marks);
+        }
+
+        studentRepository.saveAll(studentList);
+
+        return "Successfully updated mark for test!";
+    }
+
+    public String updateGradeAndMeritPosition() {
+        List<Student> tenStudents = studentRepository.findAllByClassIdAndMarksIsNotNullOrderByMarksDesc("Ten");
+        List<Student> eightStudents = studentRepository.findAllByClassIdAndMarksIsNotNullOrderByMarksDesc("Eight");
+        List<Student> fivesStudents = studentRepository.findAllByClassIdAndMarksIsNotNullOrderByMarksDesc("Five");
+
+        int i = 1;
+        for (Student student : tenStudents) {
+            student.setMeritPosition(i++);
+            int grade = (int) (student.getMarks() / 20);
+            student.setGrade(grade);
+        }
+
+        i = 1;
+        for (Student student : eightStudents) {
+            student.setMeritPosition(i++);
+            int grade = (int) (student.getMarks() / 20);
+            student.setGrade(grade);
+        }
+
+        i = 1;
+        for (Student student : fivesStudents) {
+            student.setMeritPosition(i++);
+            int grade = (int) (student.getMarks() / 20);
+            student.setGrade(grade);
+        }
+
+        studentRepository.saveAll(tenStudents);
+        studentRepository.saveAll(eightStudents);
+        studentRepository.saveAll(fivesStudents);
+
+        return "Successfully updated grade & merit position!";
+    }
 }

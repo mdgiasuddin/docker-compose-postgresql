@@ -10,7 +10,9 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface StudentRepository extends JpaRepository<Student, Integer> {
-    List<Student> findByClassIdOrderByRollNo(String classId);
+    List<Student> findAllByNameIsNotNull();
+
+    List<Student> findAllByClassIdAndMarksIsNotNullOrderByMarksDesc(String classId);
 
     List<Student> findByClassIdAndNameIsNotNullOrderByRollNo(String classId);
 
@@ -29,12 +31,8 @@ public interface StudentRepository extends JpaRepository<Student, Integer> {
 
     long countByName(Object name);
 
-    List<Student> findByNameAndSchoolName(String name, String schoolName);
-
     @Query("select s from Student s order by case when (s.verificationNo is null) then 0 else 1 end asc, s.id asc")
     List<Student> findAllByOrderById();
-
-    List<Student> findBySchoolNameAndClassIdAndSchoolRollNo(String schoolName, String classId, int schoolRollNo);
 
     @Query("select distinct s.schoolName from Student s where s.schoolName is not null")
     List<String> getDistinctSchoolName();

@@ -60,6 +60,16 @@ public class StudentController {
         return studentService.updateMark(multipartFile);
     }
 
+    /*@PutMapping("/mock/test/mark-input")
+    public String updateMarkForTest() {
+        return studentService.updateMarkForTest();
+    }*/
+
+    @PutMapping("/grade/merit-position")
+    public String updateGradeAndMeritPosition() {
+        return studentService.updateGradeAndMeritPosition();
+    }
+
     @GetMapping("/all")
     public List<Student> getAllStudent() {
         return studentService.getAllStudent();

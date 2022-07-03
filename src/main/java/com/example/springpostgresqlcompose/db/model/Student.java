@@ -46,4 +46,11 @@ public class Student {
     @Column(name = "marks")
     private Double marks;
 
+    @Column(name = "grade")
+    private Integer grade;
+
+    @Column(name = "merit_position")
+    private Integer meritPosition;
+
+
 }
