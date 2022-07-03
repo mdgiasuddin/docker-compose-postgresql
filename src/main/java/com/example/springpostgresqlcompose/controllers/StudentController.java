@@ -28,12 +28,12 @@ public class StudentController {
     @PutMapping("/verification-no")
     public String addVerificationNo() {
         return studentService.addVerificationNo();
-    }*/
+    }
 
     @GetMapping("/admit-card/{classId}")
     public String generateAdmitCard(@PathVariable("classId") String classId) throws Exception {
         return studentService.generateAdmitCard(classId);
-    }
+    }*/
 
     @GetMapping("/seat-plan/{classId}")
     public String generateSeatPlan(@PathVariable("classId") String classId) throws Exception {
