@@ -287,8 +287,6 @@ public class PdfGenerationService {
             cell.setBorder(Rectangle.NO_BORDER);
             table.addCell(cell);
 
-            String centre = "Betbaria Secondary School";
-
             table.setSpacingAfter(15);
 
             signImage.setAlignment(Element.ALIGN_LEFT);

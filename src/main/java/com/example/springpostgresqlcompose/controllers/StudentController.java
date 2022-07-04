@@ -33,12 +33,17 @@ public class StudentController {
     @GetMapping("/admit-card/{classId}")
     public String generateAdmitCard(@PathVariable("classId") String classId) throws Exception {
         return studentService.generateAdmitCard(classId);
-    }*/
+    }
 
     @GetMapping("/admit-card/blank/instant-register")
     public String generateBlankAdmitCard() throws Exception {
         return studentService.generateBlankAdmitCard();
     }
+
+    @GetMapping("/list/pdf/unregistered")
+    public String generateUnregisteredStudentList() throws Exception {
+        return studentService.generateUnregisteredStudentList();
+    }*/
 
     @GetMapping("/seat-plan/{classId}")
     public String generateSeatPlan(@PathVariable("classId") String classId) throws Exception {
@@ -53,11 +58,6 @@ public class StudentController {
     @GetMapping("/list/excel/{classId}")
     public String generateExcelOfStudentList(@PathVariable("classId") String classId) throws Exception {
         return studentService.generateExcelOfStudentList(classId);
-    }
-
-    @GetMapping("/list/pdf/unregistered")
-    public String generateUnregisteredStudentList() throws Exception {
-        return studentService.generateUnregisteredStudentList();
     }
 
     @PutMapping("/excel/mark-input")
