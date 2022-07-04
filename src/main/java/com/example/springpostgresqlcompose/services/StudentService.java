@@ -214,6 +214,21 @@ public class StudentService {
         return "Admit card generated successfully!";
     }
 
+    public String generateBlankAdmitCard() throws Exception {
+        List<Student> studentList = studentRepository.findAllByNameIsNullOrderByClassIdAscRollNoAsc();
+
+        String admitCardFileName = AppConstants.INPUT_OUTPUT_FILE_DIRECTORY + "BlankAdmitCards.pdf";
+        String watermarkAdmitCard = AppConstants.INPUT_OUTPUT_FILE_DIRECTORY + "WaterMarkedBlankAdmitCards.pdf";
+        pdfGenerationService.generateBlankAdmitCard(studentList, admitCardFileName);
+
+        Thread.sleep(2000);
+
+        Image logoImage = Image.getInstance(AppConstants.AMAR_AMI_WHITE_LOGO);
+        watermarkPdfGenerationService.addWaterMarkToPdf(admitCardFileName, watermarkAdmitCard, logoImage, 300, 300, 0.1f);
+
+        return "Admit card generated successfully!";
+    }
+
     public String generateSeatPlan(String classId) throws Exception {
         List<Student> studentList = studentRepository.findByClassIdAndNameIsNotNullOrderByRollNo(classId);
 

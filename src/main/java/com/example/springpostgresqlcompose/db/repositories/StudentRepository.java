@@ -20,6 +20,8 @@ public interface StudentRepository extends JpaRepository<Student, Integer> {
 
     List<Student> findByClassIdAndNameIsNotNullOrderBySchoolNameAscRollNoAsc(String classId);
 
+    List<Student> findAllByNameIsNullOrderByClassIdAscRollNoAsc();
+
     List<Student> findByRollNoIsBetweenOrderByRollNoAsc(long startRoll, long endRoll);
 
     @Query("select s from Student s where ( :name is null or s.name = :name ) and " +

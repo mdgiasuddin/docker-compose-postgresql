@@ -35,6 +35,11 @@ public class StudentController {
         return studentService.generateAdmitCard(classId);
     }*/
 
+    @GetMapping("/admit-card/blank/instant-register")
+    public String generateBlankAdmitCard() throws Exception {
+        return studentService.generateBlankAdmitCard();
+    }
+
     @GetMapping("/seat-plan/{classId}")
     public String generateSeatPlan(@PathVariable("classId") String classId) throws Exception {
         return studentService.generateSeatPlan(classId);

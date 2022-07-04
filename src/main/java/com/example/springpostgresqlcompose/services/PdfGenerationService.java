@@ -222,6 +222,121 @@ public class PdfGenerationService {
         document.close();
     }
 
+    public void generateBlankAdmitCard(List<Student> studentList, String filename) throws IOException, DocumentException {
+
+        Rectangle pageSize = new Rectangle(297, 213);
+//        pageSize.setBackgroundColor(new BaseColor(192, 192, 192));
+        final float marginTopBottom = 15;
+        final float marginLeftRight = 15;
+        Document document = new Document(pageSize, marginLeftRight, marginLeftRight, marginTopBottom, marginTopBottom);
+
+//        BaseFont scriptMTBold = BaseFont.createFont(AppConstants.SCRIPT_MT_BOLD, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+//        BaseFont oldEnglish = BaseFont.createFont(AppConstants.OLD_ENGLISH, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+//        BaseFont winding = BaseFont.createFont(AppConstants.WINDING, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+
+        Font largeFont = new Font(Font.FontFamily.TIMES_ROMAN, 12f, Font.BOLDITALIC, BaseColor.BLACK);
+        Font font = new Font(Font.FontFamily.TIMES_ROMAN, 10f, Font.ITALIC, BaseColor.BLACK);
+        Font controllerSmallFont = new Font(Font.FontFamily.TIMES_ROMAN, 7f, Font.NORMAL, BaseColor.BLACK);
+
+//        Font oldEnglish22 = new Font(oldEnglish, 22, Font.NORMAL, BaseColor.BLACK);
+//        Font oldEnglishIT18 = new Font(oldEnglish, 18, Font.ITALIC, BaseColor.BLACK);
+//        Font scriptMTBold11 = new Font(scriptMTBold, 11, Font.NORMAL, BaseColor.BLACK);
+//        Font controllerFont = new Font(scriptMTBold, 11f, Font.NORMAL, new BaseColor(128, 0, 0));
+//        Font windingFont = new Font(winding, 11f, Font.NORMAL);
+
+        PdfWriter writer = PdfWriter.getInstance(document, Files.newOutputStream(Paths.get(filename)));
+
+        document.open();
+
+        Image signImage = Image.getInstance(AppConstants.SIGNATURE_IMAGE);
+
+        for (Student student : studentList) {
+
+            Paragraph paragraph = new Paragraph("Amar Ami\n", largeFont);
+            paragraph.add(new Chunk("Talent Evaluation Exam - 2022\n", largeFont));
+            paragraph.setAlignment(Element.ALIGN_CENTER);
+            paragraph.setSpacingAfter(15);
+
+            PdfPTable table = new PdfPTable(2);
+            table.setWidthPercentage(100);
+            table.setWidths(new int[]{8, 6});
+
+            PdfPCell cell;
+
+            cell = new PdfPCell(new Phrase("Name: ", font));
+            cell.setBorder(Rectangle.NO_BORDER);
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase("Roll No: " + student.getRollNo(), font));
+            cell.setBorder(Rectangle.NO_BORDER);
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase("School: ", font));
+            cell.setBorder(Rectangle.NO_BORDER);
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase("Registration No: " + student.getRegNo(), font));
+            cell.setBorder(Rectangle.NO_BORDER);
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase("Class: " + student.getClassId(), font));
+            cell.setBorder(Rectangle.NO_BORDER);
+            table.addCell(cell);
+
+            cell = new PdfPCell(new Phrase("Verification No: " + student.getVerificationNo(), font));
+            cell.setBorder(Rectangle.NO_BORDER);
+            table.addCell(cell);
+
+            String centre = "Betbaria Secondary School";
+
+            table.setSpacingAfter(15);
+
+            signImage.setAlignment(Element.ALIGN_LEFT);
+
+            PdfPTable table2 = new PdfPTable(3);
+            table2.setWidths(new int[]{17, 2, 3});
+            table2.setWidthPercentage(100);
+
+            cell = new PdfPCell(new Phrase("", font));
+            cell.setBorder(Rectangle.NO_BORDER);
+            table2.addCell(cell);
+
+            PdfPCell signImageCell = new PdfPCell();
+            signImageCell.addElement(signImage);
+            signImageCell.setBorder(Rectangle.NO_BORDER);
+            table2.addCell(signImageCell);
+
+            cell = new PdfPCell(new Phrase("", font));
+            cell.setBorder(Rectangle.NO_BORDER);
+            table2.addCell(cell);
+
+            PdfPTable table3 = new PdfPTable(2);
+            table3.setWidths(new int[]{8, 5});
+            table3.setWidthPercentage(100);
+            table3.setSpacingAfter(15);
+
+            cell = new PdfPCell(new Phrase("", font));
+            cell.setBorder(Rectangle.NO_BORDER);
+            table3.addCell(cell);
+
+            Paragraph controllerExam = new Paragraph(new Chunk("Gias Uddin Ahmed\n", controllerSmallFont));
+            controllerExam.add(new Chunk("Controller of Exam", font));
+            cell = new PdfPCell(controllerExam);
+            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            cell.setBorder(Rectangle.NO_BORDER);
+            table3.addCell(cell);
+
+            document.add(paragraph);
+            document.add(table);
+            document.add(table2);
+            document.add(table3);
+
+            document.newPage();
+        }
+
+        document.close();
+    }
+
     public void generateSeatPlan(List<Student> studentList, String filename) throws IOException, DocumentException {
 
         final float margin = 5;
