@@ -43,12 +43,12 @@ public class StudentController {
     @GetMapping("/list/pdf/unregistered")
     public String generateUnregisteredStudentList() throws Exception {
         return studentService.generateUnregisteredStudentList();
-    }*/
+    }
 
     @GetMapping("/seat-plan/{classId}")
     public String generateSeatPlan(@PathVariable("classId") String classId) throws Exception {
         return studentService.generateSeatPlan(classId);
-    }
+    }*/
 
     @PostMapping("/attendance-sheet")
     public String generateAttendance(@RequestParam("file") final MultipartFile multipartFile) {

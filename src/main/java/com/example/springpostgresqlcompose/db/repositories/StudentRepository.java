@@ -24,7 +24,7 @@ public interface StudentRepository extends JpaRepository<Student, Integer> {
 
     List<Student> findByRollNoIsBetweenOrderByRollNoAsc(long startRoll, long endRoll);
 
-    @Query("select s from Student s where concat(s.rollNo, '') like :rollNo")
+    @Query("select s from Student s where upper(concat(s.rollNo, '')) like :rollNo")
     List<Student> getAllStudentsRollMatch(String rollNo);
 
     @Query("select s from Student s where ( :name is null or s.name = :name ) and " +
