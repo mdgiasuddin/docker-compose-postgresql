@@ -92,7 +92,7 @@ public class StudentController {
     }
 
     @GetMapping("/test")
-    public Map<String, Object> testStudent() {
+    public List<Student> testStudent() {
         return studentService.testStudent();
     }
 

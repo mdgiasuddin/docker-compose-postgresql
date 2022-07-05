@@ -393,17 +393,8 @@ public class StudentService {
         return studentRepository.findAllByOrderById();
     }
 
-    public Map<String, Object> testStudent() {
-        List<String> schoolNames = studentRepository.getDistinctSchoolName();
-
-        Set<String> set = new HashSet<>(schoolNames);
-        List<String> list = Arrays.asList("HB Secondary School", "Betbaria Secondary School", "Giash Uddin");
-        set.addAll(list);
-
-        Map<String, Object> map = new HashMap<>();
-        map.put("SchoolNames", set);
-
-        return map;
+    public List<Student> testStudent() {
+        return studentRepository.getAllStudentsRollMatch("%315%");
     }
 
     public String updateMarkForTest() {
