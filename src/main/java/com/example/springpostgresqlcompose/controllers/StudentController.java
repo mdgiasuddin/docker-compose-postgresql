@@ -48,11 +48,21 @@ public class StudentController {
     @GetMapping("/seat-plan/{classId}")
     public String generateSeatPlan(@PathVariable("classId") String classId) throws Exception {
         return studentService.generateSeatPlan(classId);
-    }*/
+    }
 
     @PostMapping("/attendance-sheet")
     public String generateAttendance(@RequestParam("file") final MultipartFile multipartFile) {
         return studentService.generateAttendance(multipartFile);
+    }
+
+    @PostMapping("/token-register/excel")
+    public String generateAttendance(@RequestParam("file") final MultipartFile multipartFile) {
+        return studentService.registerByTokenAdmit(multipartFile);
+    } */
+
+    @PostMapping("/instant-register-slip/excel")
+    public String generateAttendance(@RequestParam("file") final MultipartFile multipartFile) {
+        return studentService.instantRegisterBySlip(multipartFile);
     }
 
     @GetMapping("/list/excel/{classId}")

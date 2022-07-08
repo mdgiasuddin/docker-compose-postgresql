@@ -262,8 +262,8 @@ public class StudentService {
                     row = (XSSFRow) rowIterator.next();
 
                     String classId = excelGenerationService.getStringFromAllCellType(row.getCell(0));
-                    String roomNo = excelGenerationService.getStringFromAllCellType(row.getCell(1));
-                    String centre = excelGenerationService.getStringFromAllCellType(row.getCell(2));
+                    String centre = excelGenerationService.getStringFromAllCellType(row.getCell(1));
+                    String roomNo = excelGenerationService.getStringFromAllCellType(row.getCell(2));
                     long startRoll = excelGenerationService.getIntegerFromAllCellType(row.getCell(3)).longValue();
                     long endRoll = excelGenerationService.getIntegerFromAllCellType(row.getCell(4)).longValue();
 
@@ -281,6 +281,111 @@ public class StudentService {
             e.printStackTrace();
         }
         return "Ops! Could not generate attendance sheet!";
+    }
+
+    public String registerByTokenAdmit(MultipartFile multipartFile) {
+
+        if (multipartFile.isEmpty()) {
+            return "The File is empty!";
+        }
+
+        List<Student> studentList = studentRepository.findAllByNameIsNull();
+        Map<Long, Student> studentMap = new HashMap<>();
+
+        for (Student student : studentList) {
+            studentMap.put(student.getRollNo(), student);
+        }
+
+        try {
+            InputStream inputStream = multipartFile.getInputStream();
+            XSSFRow row;
+
+            XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
+            XSSFSheet spreadsheet = workbook.getSheetAt(0);
+            Iterator<Row> rowIterator = spreadsheet.iterator();
+
+            if (rowIterator.hasNext()) {
+                row = (XSSFRow) rowIterator.next();
+                if (row.getPhysicalNumberOfCells() != 6) {
+                    return "Excel must have 6 columns!";
+                }
+
+                while (rowIterator.hasNext()) {
+                    row = (XSSFRow) rowIterator.next();
+
+                    long rollNo = excelGenerationService.getIntegerFromAllCellType(row.getCell(3)).longValue();
+                    String name = excelGenerationService.getStringFromAllCellType(row.getCell(4));
+                    String schoolName = excelGenerationService.getStringFromAllCellType(row.getCell(5));
+
+                    Student student = studentMap.get(rollNo);
+                    student.setName(name);
+                    student.setSchoolName(schoolName);
+                }
+
+            }
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Ops! Could not update name & school name!";
+        }
+
+        studentRepository.saveAll(studentList);
+        return "Successfully updated name & school name!";
+    }
+
+    public String instantRegisterBySlip(MultipartFile multipartFile) {
+
+        if (multipartFile.isEmpty()) {
+            return "The File is empty!";
+        }
+
+        List<Student> studentList = new ArrayList<>();
+        try {
+            InputStream inputStream = multipartFile.getInputStream();
+            XSSFRow row;
+
+            XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
+            XSSFSheet spreadsheet = workbook.getSheetAt(0);
+            Iterator<Row> rowIterator = spreadsheet.iterator();
+
+            if (rowIterator.hasNext()) {
+                row = (XSSFRow) rowIterator.next();
+                if (row.getPhysicalNumberOfCells() != 6) {
+                    return "Excel must have 6 columns!";
+                }
+
+                while (rowIterator.hasNext()) {
+                    row = (XSSFRow) rowIterator.next();
+
+                    String classId = excelGenerationService.getStringFromAllCellType(row.getCell(0));
+                    String name = excelGenerationService.getStringFromAllCellType(row.getCell(1));
+                    String schoolName = excelGenerationService.getStringFromAllCellType(row.getCell(2));
+                    long rollNo = excelGenerationService.getIntegerFromAllCellType(row.getCell(3)).longValue();
+                    long regNo = excelGenerationService.getIntegerFromAllCellType(row.getCell(4)).longValue();
+                    String verificationNo = excelGenerationService.getStringFromAllCellType(row.getCell(5));
+
+                    Student student = new Student();
+                    student.setClassId(classId);
+                    student.setName(name);
+                    student.setSchoolName(schoolName);
+                    student.setRollNo(rollNo);
+                    student.setRegNo(regNo);
+                    student.setVerificationNo(verificationNo);
+
+                    studentList.add(student);
+                }
+
+            }
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Ops! Could not update name & school name!";
+        }
+
+        studentRepository.saveAll(studentList);
+        return "Successfully updated name & school name!";
     }
 
     public String generateUnregisteredStudentList() throws DocumentException, IOException {
