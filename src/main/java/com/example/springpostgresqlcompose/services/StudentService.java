@@ -381,11 +381,11 @@ public class StudentService {
 
         } catch (Exception e) {
             e.printStackTrace();
-            return "Ops! Could not update name & school name!";
+            return "Ops! Could not add new students!";
         }
 
         studentRepository.saveAll(studentList);
-        return "Successfully updated name & school name!";
+        return "Successfully added new students!";
     }
 
     public String generateUnregisteredStudentList() throws DocumentException, IOException {
@@ -461,15 +461,15 @@ public class StudentService {
 
             if (rowIterator.hasNext()) {
                 row = (XSSFRow) rowIterator.next();
-                if (row.getPhysicalNumberOfCells() != 4) {
-                    return "Excel must have 4 column!";
+                if (row.getPhysicalNumberOfCells() != 5) {
+                    return "Excel must have 5 column!";
                 }
 
                 while (rowIterator.hasNext()) {
                     row = (XSSFRow) rowIterator.next();
 
-                    long rollNo = excelGenerationService.getIntegerFromAllCellType(row.getCell(0)).longValue();
-                    double mark = excelGenerationService.getDoubleFromAllCellType(row.getCell(1));
+                    long rollNo = excelGenerationService.getIntegerFromAllCellType(row.getCell(1)).longValue();
+                    double mark = excelGenerationService.getDoubleFromAllCellType(row.getCell(2));
 
                     studentMap.get(rollNo).setMarks(mark);
                 }

@@ -58,7 +58,7 @@ public class StudentController {
     @PostMapping("/token-register/excel")
     public String generateAttendance(@RequestParam("file") final MultipartFile multipartFile) {
         return studentService.registerByTokenAdmit(multipartFile);
-    } */
+    }
 
     @PostMapping("/instant-register-slip/excel")
     public String generateAttendance(@RequestParam("file") final MultipartFile multipartFile) {
@@ -68,7 +68,7 @@ public class StudentController {
     @GetMapping("/list/excel/{classId}")
     public String generateExcelOfStudentList(@PathVariable("classId") String classId) throws Exception {
         return studentService.generateExcelOfStudentList(classId);
-    }
+    } */
 
     @PutMapping("/excel/mark-input")
     public String updateMark(@RequestParam("file") final MultipartFile multipartFile) {
