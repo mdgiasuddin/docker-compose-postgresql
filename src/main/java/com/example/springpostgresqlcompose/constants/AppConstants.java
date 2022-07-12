@@ -11,4 +11,8 @@ public class AppConstants {
     public static final String SCRIPT_MT_BOLD = STATIC_RESOURCES_DIRECTORY + "ScriptMTBold.ttf";
     public static final String OLD_ENGLISH = STATIC_RESOURCES_DIRECTORY + "OLDENGL.TTF";
     public static final String WINDING = STATIC_RESOURCES_DIRECTORY + "wingding.ttf";
+
+    public static final int TEN_PRIZE = 15;
+    public static final int EIGHT_PRIZE = 10;
+    public static final int FIVE_PRIZE = 13;
 }

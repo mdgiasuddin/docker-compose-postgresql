@@ -440,6 +440,115 @@ public class PdfGenerationService {
         document.close();
     }
 
+    public void generateFinalResult(List<Student> tenStudent, List<Student> eightStudent, List<Student> fiveStudent, String filename) throws IOException, DocumentException {
+
+        final float margin = 25;
+        Document document = new Document(PageSize.A4, margin, margin, margin, margin);
+
+        Font boldFont = new Font(Font.FontFamily.TIMES_ROMAN, 12f, Font.BOLD, BaseColor.BLACK);
+        Font font = new Font(Font.FontFamily.TIMES_ROMAN, 12f, Font.NORMAL, BaseColor.BLACK);
+
+        PdfWriter.getInstance(document, Files.newOutputStream(Paths.get(filename)));
+
+        document.open();
+
+        Paragraph headingParagraph = new Paragraph("Talent Evaluation Exam - 2022\n", font);
+        headingParagraph.add(new Chunk("Result List", font));
+        headingParagraph.setAlignment(Element.ALIGN_CENTER);
+        headingParagraph.setSpacingAfter(10);
+
+        Paragraph tenParagraph = new Paragraph("Class - 10 (Ten)", boldFont);
+        tenParagraph.setAlignment(Element.ALIGN_CENTER);
+        tenParagraph.setSpacingAfter(10);
+
+        PdfPTable tenTable = new PdfPTable(5);
+        tenTable.setWidthPercentage(100);
+        tenTable.setWidths(new int[]{4, 6, 15, 15, 5});
+
+        tenTable.addCell(new Phrase("Merit", boldFont));
+        tenTable.addCell(new Phrase("Roll No.", boldFont));
+        tenTable.addCell(new Phrase("Name", boldFont));
+        tenTable.addCell(new Phrase("School", boldFont));
+        tenTable.addCell(new Phrase("Marks", boldFont));
+
+
+        for (Student student : tenStudent) {
+
+            tenTable.addCell(new Phrase(student.getMeritPosition() + ".", font));
+            tenTable.addCell(new Phrase(student.getRollNo() + "", font));
+            tenTable.addCell(new Phrase(student.getName(), font));
+            tenTable.addCell(new Phrase(student.getSchoolName(), font));
+            tenTable.addCell(new Phrase(student.getMarks() + "", font));
+        }
+
+        Paragraph eightParagraph = new Paragraph("Class - 8 (Eight)", boldFont);
+        eightParagraph.setAlignment(Element.ALIGN_CENTER);
+        eightParagraph.setSpacingAfter(10);
+
+        PdfPTable eightTable = new PdfPTable(5);
+        eightTable.setWidthPercentage(100);
+        eightTable.setWidths(new int[]{4, 6, 15, 15, 5});
+
+        eightTable.addCell(new Phrase("Merit", boldFont));
+        eightTable.addCell(new Phrase("Roll No.", boldFont));
+        eightTable.addCell(new Phrase("Name", boldFont));
+        eightTable.addCell(new Phrase("School", boldFont));
+        eightTable.addCell(new Phrase("Marks", boldFont));
+
+        for (Student student : eightStudent) {
+
+            eightTable.addCell(new Phrase(student.getMeritPosition() + ".", font));
+            eightTable.addCell(new Phrase(student.getRollNo() + "", font));
+            eightTable.addCell(new Phrase(student.getName(), font));
+            eightTable.addCell(new Phrase(student.getSchoolName(), font));
+            eightTable.addCell(new Phrase(student.getMarks() + "", font));
+        }
+
+        eightTable.setSpacingAfter(10);
+
+        Paragraph fiveParagraph = new Paragraph("Class - 5 (Five)", boldFont);
+        fiveParagraph.setSpacingAfter(10);
+
+        PdfPTable fiveTable = new PdfPTable(5);
+        fiveTable.setWidthPercentage(100);
+        fiveParagraph.setAlignment(Element.ALIGN_CENTER);
+        fiveTable.setWidths(new int[]{4, 6, 15, 15, 5});
+
+        fiveTable.addCell(new Phrase("Merit", boldFont));
+        fiveTable.addCell(new Phrase("Roll No.", boldFont));
+        fiveTable.addCell(new Phrase("Name", boldFont));
+        fiveTable.addCell(new Phrase("School", boldFont));
+        fiveTable.addCell(new Phrase("Obtained Marks", boldFont));
+
+        for (Student student : fiveStudent) {
+
+            fiveTable.addCell(new Phrase(student.getMeritPosition() + ".", font));
+            fiveTable.addCell(new Phrase(student.getRollNo() + "", font));
+            fiveTable.addCell(new Phrase(student.getName(), font));
+            fiveTable.addCell(new Phrase(student.getSchoolName(), font));
+            fiveTable.addCell(new Phrase(student.getMarks() + "", font));
+        }
+
+        fiveTable.setSpacingAfter(60);
+
+
+        document.add(headingParagraph);
+
+        document.add(tenParagraph);
+        document.add(tenTable);
+
+        document.add(eightParagraph);
+        document.add(eightTable);
+
+        document.add(fiveParagraph);
+        document.add(fiveTable);
+
+//        document.newPage();
+//        }
+
+        document.close();
+    }
+
     public void generateUnregisteredStudentList(UnregisteredStudents unregisteredStudents) throws IOException, DocumentException {
 
         String filename = AppConstants.INPUT_OUTPUT_FILE_DIRECTORY + "Unregistered_List.pdf";

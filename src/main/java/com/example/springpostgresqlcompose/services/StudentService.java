@@ -238,6 +238,17 @@ public class StudentService {
         return "Seat plan generated successfully!";
     }
 
+    public String generateFinalResult() throws Exception {
+        List<Student> tenStudent = studentRepository.findAllByClassIdAndMeritPositionLessThanEqualOrderByMeritPosition("Ten", AppConstants.TEN_PRIZE);
+        List<Student> eightStudent = studentRepository.findAllByClassIdAndMeritPositionLessThanEqualOrderByMeritPosition("Eight", AppConstants.EIGHT_PRIZE);
+        List<Student> fiveStudent = studentRepository.findAllByClassIdAndMeritPositionLessThanEqualOrderByMeritPosition("Five", AppConstants.FIVE_PRIZE);
+
+        String fileName = AppConstants.INPUT_OUTPUT_FILE_DIRECTORY + "Final_Result.pdf";
+        pdfGenerationService.generateFinalResult(tenStudent, eightStudent, fiveStudent, fileName);
+
+        return "Result generated successfully!";
+    }
+
     public String generateAttendance(MultipartFile multipartFile) {
         if (multipartFile.isEmpty()) {
             return "The File is empty!";
@@ -461,15 +472,15 @@ public class StudentService {
 
             if (rowIterator.hasNext()) {
                 row = (XSSFRow) rowIterator.next();
-                if (row.getPhysicalNumberOfCells() != 5) {
-                    return "Excel must have 5 column!";
+                if (row.getPhysicalNumberOfCells() != 4) {
+                    return "Excel must have 4 column!";
                 }
 
                 while (rowIterator.hasNext()) {
                     row = (XSSFRow) rowIterator.next();
 
-                    long rollNo = excelGenerationService.getIntegerFromAllCellType(row.getCell(1)).longValue();
-                    double mark = excelGenerationService.getDoubleFromAllCellType(row.getCell(2));
+                    long rollNo = excelGenerationService.getIntegerFromAllCellType(row.getCell(0)).longValue();
+                    double mark = excelGenerationService.getDoubleFromAllCellType(row.getCell(1));
 
                     studentMap.get(rollNo).setMarks(mark);
                 }

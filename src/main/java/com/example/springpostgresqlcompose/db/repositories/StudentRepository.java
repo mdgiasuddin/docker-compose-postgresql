@@ -18,6 +18,8 @@ public interface StudentRepository extends JpaRepository<Student, Integer> {
 
     List<Student> findByClassIdAndNameIsNotNullOrderByRollNo(String classId);
 
+    List<Student> findAllByClassIdAndMeritPositionLessThanEqualOrderByMeritPosition(String classId, int meritPosition);
+
     List<Student> findByClassIdAndNameIsNullOrderByRollNo(String classId);
 
     List<Student> findByClassIdAndNameIsNotNullOrderBySchoolNameAscRollNoAsc(String classId);

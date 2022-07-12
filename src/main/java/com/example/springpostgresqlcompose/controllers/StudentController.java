@@ -8,7 +8,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -68,22 +67,28 @@ public class StudentController {
     @GetMapping("/list/excel/{classId}")
     public String generateExcelOfStudentList(@PathVariable("classId") String classId) throws Exception {
         return studentService.generateExcelOfStudentList(classId);
-    } */
+    }
 
     @PutMapping("/excel/mark-input")
     public String updateMark(@RequestParam("file") final MultipartFile multipartFile) {
         return studentService.updateMark(multipartFile);
-    }
+    } */
 
     /*@PutMapping("/mock/test/mark-input")
     public String updateMarkForTest() {
         return studentService.updateMarkForTest();
-    }*/
+    }
 
     @PutMapping("/grade/merit-position")
     public String updateGradeAndMeritPosition() {
         return studentService.updateGradeAndMeritPosition();
+    } */
+
+    @GetMapping("/result/final/prize-list")
+    public String generateFinalResult() throws Exception {
+        return studentService.generateFinalResult();
     }
+
 
     @GetMapping("/all")
     public List<Student> getAllStudent() {
