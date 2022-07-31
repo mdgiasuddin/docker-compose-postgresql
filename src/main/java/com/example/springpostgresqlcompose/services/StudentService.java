@@ -113,8 +113,8 @@ public class StudentService {
         }
 
         PriorityQueue<SchoolWiseStudent> queue = new PriorityQueue<>((s1, s2) -> s2.getCount() - s1.getCount());
-        for (Map.Entry<String, List<StudentDTO>> entry : map.entrySet()) {
-            queue.add(new SchoolWiseStudent(entry.getValue().size(), entry.getValue()));
+        for (List<StudentDTO> studentDTOS : map.values()) {
+            queue.add(new SchoolWiseStudent(studentDTOS.size(), studentDTOS));
         }
 
         Random random = new Random();
