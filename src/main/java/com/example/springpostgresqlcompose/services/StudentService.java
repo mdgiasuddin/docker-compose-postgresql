@@ -93,6 +93,11 @@ public class StudentService {
             List<StudentDTO> sortedStudent = sortStudent(femaleStudentDTOList);
             sortedStudent.addAll(sortStudent(maleStudentDTOList));
 
+//            int i = 1;
+//            for (StudentDTO s : sortedStudent) {
+//                System.out.println(i++ + " : " + s);
+//            }
+
             saveStudentToDatabase(sortedStudent);
 
             return "Successfully saved to database!";
@@ -102,7 +107,7 @@ public class StudentService {
     }
 
     public List<StudentDTO> sortStudent(List<StudentDTO> studentDTOList) {
-        List<StudentDTO> resultList = new ArrayList<>();
+        List<StudentDTO> sortedStudentList = new ArrayList<>();
 
         Map<String, List<StudentDTO>> map = new HashMap<>();
 
@@ -125,10 +130,9 @@ public class StudentService {
 
             int randIndex = random.nextInt(maxSchoolStudent.getCount());
             StudentDTO selectedStudent1 = maxStudentDTOS.get(randIndex);
-            resultList.add(selectedStudent1);
+            sortedStudentList.add(selectedStudent1);
 
             maxStudentDTOS.set(randIndex, maxStudentDTOS.get(maxSchoolStudent.getCount() - 1));
-            maxStudentDTOS.set(maxSchoolStudent.getCount() - 1, selectedStudent1);
             maxSchoolStudent.setCount(maxSchoolStudent.getCount() - 1);
 
             if (maxSchoolStudent.getCount() > 0) {
@@ -141,10 +145,9 @@ public class StudentService {
 
                 randIndex = random.nextInt(secondMaxSchoolStudent.getCount());
                 StudentDTO selectedStudent2 = secondMaxStudentDTOS.get(randIndex);
-                resultList.add(selectedStudent2);
+                sortedStudentList.add(selectedStudent2);
 
                 secondMaxStudentDTOS.set(randIndex, secondMaxStudentDTOS.get(secondMaxSchoolStudent.getCount() - 1));
-                secondMaxStudentDTOS.set(secondMaxSchoolStudent.getCount() - 1, selectedStudent1);
                 secondMaxSchoolStudent.setCount(secondMaxSchoolStudent.getCount() - 1);
 
                 queue.add(maxSchoolStudent);
@@ -154,7 +157,7 @@ public class StudentService {
 
         }
 
-        return resultList;
+        return sortedStudentList;
     }
 
     public void saveStudentToDatabase(List<StudentDTO> studentDTOList) {
