@@ -8,7 +8,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -19,7 +21,7 @@ public class StudentController {
 
     private final StudentService studentService;
 
-    /*@PostMapping("/excel")
+    @PostMapping("/excel")
     public String saveStudent(@RequestParam("file") final MultipartFile multipartFile) throws IOException {
         return studentService.saveStudent(multipartFile);
     }
@@ -55,12 +57,12 @@ public class StudentController {
     }
 
     @PostMapping("/token-register/excel")
-    public String generateAttendance(@RequestParam("file") final MultipartFile multipartFile) {
+    public String registerByTokenAdmit(@RequestParam("file") final MultipartFile multipartFile) {
         return studentService.registerByTokenAdmit(multipartFile);
     }
 
     @PostMapping("/instant-register-slip/excel")
-    public String generateAttendance(@RequestParam("file") final MultipartFile multipartFile) {
+    public String instantRegisterBySlip(@RequestParam("file") final MultipartFile multipartFile) {
         return studentService.instantRegisterBySlip(multipartFile);
     }
 
@@ -72,9 +74,9 @@ public class StudentController {
     @PutMapping("/excel/mark-input")
     public String updateMark(@RequestParam("file") final MultipartFile multipartFile) {
         return studentService.updateMark(multipartFile);
-    } */
+    }
 
-    /*@PutMapping("/mock/test/mark-input")
+    @PutMapping("/mock/test/mark-input")
     public String updateMarkForTest() {
         return studentService.updateMarkForTest();
     }
@@ -82,7 +84,7 @@ public class StudentController {
     @PutMapping("/grade/merit-position")
     public String updateGradeAndMeritPosition() {
         return studentService.updateGradeAndMeritPosition();
-    } */
+    }
 
     @GetMapping("/result/final/prize-list")
     public String generateFinalResult() throws Exception {

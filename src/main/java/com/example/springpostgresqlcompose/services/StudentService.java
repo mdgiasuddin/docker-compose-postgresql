@@ -3,10 +3,7 @@ package com.example.springpostgresqlcompose.services;
 import com.example.springpostgresqlcompose.constants.AppConstants;
 import com.example.springpostgresqlcompose.db.model.Student;
 import com.example.springpostgresqlcompose.db.repositories.StudentRepository;
-import com.example.springpostgresqlcompose.dtos.AttendanceSheetData;
-import com.example.springpostgresqlcompose.dtos.ExcelData;
-import com.example.springpostgresqlcompose.dtos.StudentDTO;
-import com.example.springpostgresqlcompose.dtos.UnregisteredStudents;
+import com.example.springpostgresqlcompose.dtos.*;
 import com.example.springpostgresqlcompose.enums.Gender;
 import com.example.springpostgresqlcompose.utils.ClassOptionUtils;
 import com.example.springpostgresqlcompose.utils.StringFormattingUtils;
@@ -84,7 +81,7 @@ public class StudentService {
                 studentDTO.setClassIdActual(classIdActual);
                 studentDTO.setSchoolRollNo(schoolRollNo);
 
-                if (gender.equals("MALE")) {
+                if (gender.equals("M")) {
                     studentDTO.setGender(Gender.M);
                     maleStudentDTOList.add(studentDTO);
                 } else {
@@ -99,53 +96,64 @@ public class StudentService {
             saveStudentToDatabase(sortedStudent);
 
             return "Successfully saved to database!";
-
         }
-
 
         return "Ops! could not save to database!";
     }
 
     public List<StudentDTO> sortStudent(List<StudentDTO> studentDTOList) {
         List<StudentDTO> resultList = new ArrayList<>();
+
+        Map<String, List<StudentDTO>> map = new HashMap<>();
+
+        for (StudentDTO studentDTO : studentDTOList) {
+            List<StudentDTO> dtos = map.getOrDefault(studentDTO.getSchoolName(), new ArrayList<>());
+            dtos.add(studentDTO);
+            map.put(studentDTO.getSchoolName(), dtos);
+        }
+
+        PriorityQueue<SchoolWiseStudent> queue = new PriorityQueue<>((s1, s2) -> s2.getCount() - s1.getCount());
+        for (Map.Entry<String, List<StudentDTO>> entry : map.entrySet()) {
+            queue.add(new SchoolWiseStudent(entry.getValue().size(), entry.getValue()));
+        }
+
         Random random = new Random();
 
-        int listLength = studentDTOList.size();
-        while (listLength > 0) {
-            int count = 0;
-            while (true) {
-                int randIndex = random.nextInt(listLength);
-                if (resultList.isEmpty() || !resultList.get(resultList.size() - 1).getSchoolName().equals(studentDTOList.get(randIndex).getSchoolName())) {
-                    resultList.add(studentDTOList.get(randIndex));
+        while (!queue.isEmpty()) {
+            SchoolWiseStudent maxSchoolStudent = queue.poll();
+            List<StudentDTO> maxStudentDTOS = maxSchoolStudent.getStudentDTOList();
 
-                    StudentDTO tempStudent = studentDTOList.get(randIndex);
-                    studentDTOList.set(randIndex, studentDTOList.get(listLength - 1));
-                    studentDTOList.set(listLength - 1, tempStudent);
-                    listLength--;
+            int randIndex = random.nextInt(maxSchoolStudent.getCount());
+            StudentDTO selectedStudent1 = maxStudentDTOS.get(randIndex);
+            resultList.add(selectedStudent1);
 
-                    count = 0;
-                    break;
+            maxStudentDTOS.set(randIndex, maxStudentDTOS.get(maxSchoolStudent.getCount() - 1));
+            maxStudentDTOS.set(maxSchoolStudent.getCount() - 1, selectedStudent1);
+            maxSchoolStudent.setCount(maxSchoolStudent.getCount() - 1);
+
+            if (maxSchoolStudent.getCount() > 0) {
+                if (queue.isEmpty()) {
+                    throw new RuntimeException("Student cannot be sorted!");
                 }
-                count++;
 
-                if (count > 200)
-                    break;
+                SchoolWiseStudent secondMaxSchoolStudent = queue.poll();
+                List<StudentDTO> secondMaxStudentDTOS = secondMaxSchoolStudent.getStudentDTOList();
+
+                randIndex = random.nextInt(secondMaxSchoolStudent.getCount());
+                StudentDTO selectedStudent2 = secondMaxStudentDTOS.get(randIndex);
+                resultList.add(selectedStudent2);
+
+                secondMaxStudentDTOS.set(randIndex, secondMaxStudentDTOS.get(secondMaxSchoolStudent.getCount() - 1));
+                secondMaxStudentDTOS.set(secondMaxSchoolStudent.getCount() - 1, selectedStudent1);
+                secondMaxSchoolStudent.setCount(secondMaxSchoolStudent.getCount() - 1);
+
+                queue.add(maxSchoolStudent);
+                if (secondMaxSchoolStudent.getCount() > 0)
+                    queue.add(secondMaxSchoolStudent);
             }
 
-            if (count > 200)
-                break;
-
         }
-        for (int i = 0; i < listLength; i++) {
-            StudentDTO student = studentDTOList.get(i);
 
-            for (int j = 1; j < resultList.size(); j++) {
-                if (!resultList.get(j - 1).getSchoolName().equals(student.getSchoolName()) && !resultList.get(j).getSchoolName().equals(student.getSchoolName())) {
-                    resultList.add(j, student);
-                    break;
-                }
-            }
-        }
         return resultList;
     }
 

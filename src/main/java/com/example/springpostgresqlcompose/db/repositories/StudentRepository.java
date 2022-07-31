@@ -49,7 +49,7 @@ public interface StudentRepository extends JpaRepository<Student, Integer> {
     @Query("select distinct s.schoolName from Student s where s.schoolName is not null")
     List<String> getDistinctSchoolName();
 
-    @Query("select s from Student s where s.addressDetails.address = :address")
-    List<Student> getStudentByAddress(@Param("address") String address);
+//    @Query("select s from Student s where s.addressDetails.address = :address")
+//    List<Student> getStudentByAddress(@Param("address") String address);
 
 }

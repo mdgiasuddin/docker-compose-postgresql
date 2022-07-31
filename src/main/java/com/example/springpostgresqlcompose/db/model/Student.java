@@ -52,6 +52,6 @@ public class Student {
     @Column(name = "merit_position")
     private Integer meritPosition;
 
-    @OneToOne(mappedBy = "student")
-    private AddressDetails addressDetails;
+//    @OneToOne(fetch = FetchType.LAZY, mappedBy = "student")
+//    private AddressDetails addressDetails;
 }

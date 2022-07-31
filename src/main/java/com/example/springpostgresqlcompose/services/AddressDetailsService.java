@@ -5,15 +5,12 @@ import com.example.springpostgresqlcompose.db.model.Student;
 import com.example.springpostgresqlcompose.db.repositories.AddressDetailsRepository;
 import com.example.springpostgresqlcompose.db.repositories.StudentRepository;
 import com.example.springpostgresqlcompose.dtos.AddressDetailsDTO;
-import com.example.springpostgresqlcompose.dtos.StudentAddressDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @Slf4j
@@ -38,21 +35,21 @@ public class AddressDetailsService {
         return "Address details saved successfully!";
     }
 
-    public List<StudentAddressDTO> getStudentByAddress(String address) {
-        List<Student> students = studentRepository.getStudentByAddress(address);
-
-        List<StudentAddressDTO> studentAddressDTOS = new ArrayList<>();
-        students.forEach(student -> {
-            studentAddressDTOS.add(StudentAddressDTO.builder()
-                    .studentId(student.getId())
-                    .studentName(student.getName())
-                    .studentRollNo(student.getRollNo())
-                    .address(student.getAddressDetails().getAddress())
-                    .upazila(student.getAddressDetails().getUpazila())
-                    .district(student.getAddressDetails().getDistrict())
-                    .build());
-        });
-
-        return studentAddressDTOS;
-    }
+//    public List<StudentAddressDTO> getStudentByAddress(String address) {
+//        List<Student> students = studentRepository.getStudentByAddress(address);
+//
+//        List<StudentAddressDTO> studentAddressDTOS = new ArrayList<>();
+//        students.forEach(student -> {
+//            studentAddressDTOS.add(StudentAddressDTO.builder()
+//                    .studentId(student.getId())
+//                    .studentName(student.getName())
+//                    .studentRollNo(student.getRollNo())
+//                    .address(student.getAddressDetails().getAddress())
+//                    .upazila(student.getAddressDetails().getUpazila())
+//                    .district(student.getAddressDetails().getDistrict())
+//                    .build());
+//        });
+//
+//        return studentAddressDTOS;
+//    }
 }
