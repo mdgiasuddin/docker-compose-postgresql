@@ -129,8 +129,7 @@ public class StudentService {
             List<StudentDTO> maxStudentDTOS = maxSchoolStudent.getStudentDTOList();
 
             int randIndex = random.nextInt(maxSchoolStudent.getCount());
-            StudentDTO selectedStudent1 = maxStudentDTOS.get(randIndex);
-            sortedStudentList.add(selectedStudent1);
+            sortedStudentList.add(maxStudentDTOS.get(randIndex));
 
             maxStudentDTOS.set(randIndex, maxStudentDTOS.get(maxSchoolStudent.getCount() - 1));
             maxSchoolStudent.setCount(maxSchoolStudent.getCount() - 1);
@@ -144,8 +143,7 @@ public class StudentService {
                 List<StudentDTO> secondMaxStudentDTOS = secondMaxSchoolStudent.getStudentDTOList();
 
                 randIndex = random.nextInt(secondMaxSchoolStudent.getCount());
-                StudentDTO selectedStudent2 = secondMaxStudentDTOS.get(randIndex);
-                sortedStudentList.add(selectedStudent2);
+                sortedStudentList.add(secondMaxStudentDTOS.get(randIndex));
 
                 secondMaxStudentDTOS.set(randIndex, secondMaxStudentDTOS.get(secondMaxSchoolStudent.getCount() - 1));
                 secondMaxSchoolStudent.setCount(secondMaxSchoolStudent.getCount() - 1);
